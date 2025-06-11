@@ -214,6 +214,10 @@ int main(int argc, char *argv[]) {
             binary[roffset++] = OP_JE;
         } else if (strcmp("JNE", raw[raw_i][0]) == 0) {
             binary[roffset++] = OP_JNE;
+        } else if (strcmp("JG", raw[raw_i][0]) == 0) {
+            binary[roffset++] = OP_JG;
+        } else if (strcmp("JL", raw[raw_i][0]) == 0) {
+            binary[roffset++] = OP_JL;
         } else if (strcmp("PUSH", raw[raw_i][0]) == 0) {
             binary[roffset++] = OP_PUSH;
         } else if (strcmp("POP", raw[raw_i][0]) == 0) {
