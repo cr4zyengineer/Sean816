@@ -2,25 +2,40 @@
  * Header
  *
  */
+#include <unistd.h>
 #include <stdint.h>
 
 /*
- * NOTE: Not defining one means its ignored, dont worry
+ * NOTE: Define this to get the offset, note: you have to nullterminate it!
  */
-uint16_t device_offset(void)
+static uint16_t offsets[3] = {
+    0x0001,
+    0x0000
+};
+
+uint16_t* device_offset(void)
 {
-    return 0x0000;
+    return offsets;
 }
 
 /*
  *
  */
-void device_read(uint8_t *value)
+uint8_t some_device_value = 0;
+void device_read(uint16_t addr, uint8_t *value)
 {
-    *value = 0xFF;
+    *value = some_device_value;
 }
 
-void device_write(uint8_t value)
+void device_write(uint16_t addr, uint8_t value)
 {
-    // Implement handling of writing
+    some_device_value = value;
+}
+
+/*
+ * Initilizer
+ */
+void device_init(void)
+{
+    some_device_value = 27;
 }
