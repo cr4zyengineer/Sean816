@@ -16,20 +16,23 @@ typedef struct {
     uint16_t sp;
 
     // Memory offset register
+    // NOTE: This is a more old practise compared to the newer ML and MH registers but it sets off memory access done by LOAD and STORE
     uint8_t mo;
 
     // Memory full addressing registers for low byte and high byte equalling a full address
+    // NOTE: As the cpu is 8bit we need 2 registers to have arbitary 16bit memory reading and writing without editing exectable memory, as I later will add MMU(I already wrote one)
     uint8_t ml;
     uint8_t mh;
 
     // Reserved for the instructions
+    // NOTE: ta,tc,tc,td is created to minimise the argument bloat, and cmp is the result of cmp for JE and JNE to use
     uint8_t ta;
     uint8_t tb;
     uint8_t tc;
     uint8_t td;
     uint8_t cmp;
 
-    // Registers for a function to return a value
+    // Registers for a function to return a value       Return Register
     uint8_t ra;
     uint8_t rb;
     uint8_t rc;
@@ -39,7 +42,7 @@ typedef struct {
     uint8_t rg;
     uint8_t rh;
 
-    // Registers that never change across calls
+    // Registers that never change across calls         Global Register
     uint8_t ga;
     uint8_t gb;
     uint8_t gc;
@@ -49,7 +52,7 @@ typedef struct {
     uint8_t gg;
     uint8_t gh;
 
-    // Accumulator
+    // Accumulator                                      General Purpose Register
     uint8_t a;
 
     // General purpose registers
@@ -63,11 +66,6 @@ typedef struct {
 
     // Register array for offsetting
     uint8_t *reg[UINT8_MAX];
-
-    // Instruction cache
-    bool t1;
-    bool t2;
-    bool t3;
 } cpu_core_t;
 
 /*
