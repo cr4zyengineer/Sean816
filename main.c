@@ -12,11 +12,33 @@
 
 int main(int argc, char **argv)
 {
-    memory_load_binary("./Sean816Asm/test.bin");
+    if(argc < 2)
+    {
+        printf("Usage: %s [-device <path to device>] <path/to/binary>\n", argv[0]);
+        return 1;
+    }
 
-    // Load hardcoded devices
-    //device_load_device("Device/Template/TemplateDevice.so");
-    device_load_device("Device/Serial/Serial.so");
+    // Load devices
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-device") == 0) {
+            if (i + 1 < argc) {
+                if(access(argv[i + 1], R_OK) == 0)
+                {
+                    device_load_device(argv[i + 1]);
+                    i++;
+                } else {
+                    fprintf(stderr, "Error: device not found at %s\n", argv[i + 1]);
+                    return 1;
+                }
+            } else {
+                fprintf(stderr, "Error: -device option requires a path argument\n");
+                return 1;
+            }
+        }
+    }
+
+    // Load binary
+    memory_load_binary(argv[argc - 1]);
 
     // Execute code
     cpu_core_t *core = cpu_create_core();
