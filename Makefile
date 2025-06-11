@@ -8,5 +8,5 @@ Sean816AsmS:
 Sean816EmuS:
 	make -C Device/Template
 	make -C Device/Serial
-	clang *.c cpu/*.c -o sean816
-	./sean816
+	clang *.c cpu/*.c -o Sean816
+	./Sean816
