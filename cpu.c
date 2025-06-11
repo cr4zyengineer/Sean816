@@ -1,0 +1,136 @@
+#include "cpu.h"
+#include "memory.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+/*
+ * Instructions
+ */
+void cpu_hlt(cpu_core_t *core);
+
+void cpu_load(cpu_core_t *core);
+void cpu_store(cpu_core_t *core);
+void cpu_loadlh(cpu_core_t *core);
+void cpu_storelh(cpu_core_t *core);
+void cpu_mov(cpu_core_t *core);
+
+void cpu_add(cpu_core_t *core);
+void cpu_sub(cpu_core_t *core);
+void cpu_mul(cpu_core_t *core);
+void cpu_div(cpu_core_t *core);
+void cpu_inc(cpu_core_t *core);
+void cpu_dec(cpu_core_t *core);
+
+void cpu_jmp(cpu_core_t *core);
+void cpu_cmp(cpu_core_t *core);
+void cpu_je(cpu_core_t *core);
+void cpu_jne(cpu_core_t *core);
+
+void cpu_push(cpu_core_t *core);
+void cpu_pop(cpu_core_t *core);
+void cpu_call(cpu_core_t *core);
+void cpu_ret(cpu_core_t *core);
+
+/*
+ * Opcode table
+ */
+instruction_t opcode_table[UINT8_MAX] = {
+    cpu_hlt,
+
+    cpu_load,
+    cpu_store,
+    cpu_loadlh,
+    cpu_storelh,
+    cpu_mov,
+
+    cpu_add,
+    cpu_sub,
+    cpu_mul,
+    cpu_div,
+    cpu_inc,
+    cpu_dec,
+
+    cpu_jmp,
+    cpu_cmp,
+    cpu_je,
+    cpu_jne,
+
+    cpu_push,
+    cpu_pop,
+    cpu_call,
+    cpu_ret
+};
+
+/*
+ * Creates a CPU Core
+ */
+cpu_core_t* cpu_create_core(void)
+{
+    cpu_core_t *core = NULL;
+    core = malloc(sizeof(cpu_core_t));
+
+    core->pc = MEMORY_MAPPED_IO_REGION_SIZE;    // Setting up program counter and stack pointer
+    core->sp = UINT16_MAX;
+    core->mo = 0;
+    core->ml = 0;
+    core->mh = 0;
+    core->cmp = 0;
+
+    core->a = 0;                    // Setting(Initilizing) up registers
+    core->b = 0;
+    core->c = 0;
+    core->d = 0;
+    core->e = 0;
+    core->f = 0;
+    core->g = 0;
+    core->h = 0;
+
+    core->reg[0x00] = &core->a;     // Mapping registers so they are easier to get, like the opcode table thingy
+    core->reg[0x01] = &core->b;
+    core->reg[0x02] = &core->c;
+    core->reg[0x03] = &core->d;
+    core->reg[0x04] = &core->e;
+    core->reg[0x05] = &core->f;
+    core->reg[0x06] = &core->g;
+    core->reg[0x07] = &core->h;
+    core->reg[0x08] = &core->ra;
+    core->reg[0x09] = &core->rb;
+    core->reg[0x0A] = &core->rc;
+    core->reg[0x0B] = &core->rd;
+    core->reg[0x0C] = &core->re;
+    core->reg[0x0D] = &core->rf;
+    core->reg[0x0E] = &core->rg;
+    core->reg[0x0F] = &core->rh;
+    core->reg[0x10] = &core->ga;
+    core->reg[0x11] = &core->gb;
+    core->reg[0x12] = &core->gc;
+    core->reg[0x13] = &core->gd;
+    core->reg[0x14] = &core->ge;
+    core->reg[0x15] = &core->gf;
+    core->reg[0x16] = &core->gg;
+    core->reg[0x17] = &core->gh;
+    core->reg[0x18] = &core->mo;
+    core->reg[0x19] = &core->ml;
+    core->reg[0x1A] = &core->mh;
+
+    return core;
+}
+
+/*
+ * Executes a cpu core;
+ */
+void cpu_exec_core(cpu_core_t *core)
+{
+    // Lets go...
+    uint8_t instruction = 0x00;
+    while(1)
+    {
+        memory_read(core->pc++, &instruction);        // Read the instruction
+
+        // NOTE: This is for debugging
+        //printf("[*] running instruction: %p on program counter %p\n", (void*)(uintptr_t)instruction, (void*)(uintptr_t)core->pc);
+
+        opcode_table[instruction](core);              // Execute instruction
+    }
+}
