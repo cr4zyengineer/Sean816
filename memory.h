@@ -8,7 +8,7 @@
  * Definitions
  *
  */
-#define MEMORY_MAPPED_IO_REGION_SIZE 0x00CF
+#define MEMORY_MAPPED_IO_REGION_SIZE 0x00FF
 
 enum MemoryIOMappingType {
     MIO_NONE = 0x00,

@@ -11,7 +11,7 @@
 #include "libasmfile.h"
 #include "code.h"
 #include "../cpu.h"
-#include "../rom/header.h"
+#include "../ROM/header.h"
 
 typedef struct {
     char *modified_str;
