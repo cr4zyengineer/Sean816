@@ -73,7 +73,7 @@ instruction_t opcode_table[UINT8_MAX] = {
     cpu_push,
     cpu_pop,
     cpu_call,
-    cpu_ret
+    cpu_ret,
 };
 
 /*
@@ -131,14 +131,14 @@ cpu_core_t* cpu_create_core(void)
 void cpu_exec_core(cpu_core_t *core)
 {
     // Lets go...
-    uint8_t instruction = 0x00;
+    uint8_t instruction_id = 0x00;
+    instruction_t instruction = NULL;
     while(1)
     {
-        memory_read(core->pc++, &instruction);        // Read the instruction
+        memory_read(core->pc++, &instruction_id);        // Read the instruction
 
-        // NOTE: This is for debugging
-        //printf("[*] running instruction: %p on program counter %p\n", (void*)(uintptr_t)instruction, (void*)(uintptr_t)core->pc);
-
-        opcode_table[instruction](core);              // Execute instruction
+        instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes
+        if(instruction)
+            instruction(core);              // Execute instruction
     }
 }
