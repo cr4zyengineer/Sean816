@@ -91,6 +91,9 @@ cpu_core_t* cpu_create_core(void)
     core->mh = 0;
     core->cmp = 0;
 
+    for(int i = 0x00; i < 257; i++)
+        core->reg[i] = &core->a;
+
     core->reg[0x00] = &core->a;     // Mapping registers so they are easier to get, like the opcode table thingy
     core->reg[0x01] = &core->b;
     core->reg[0x02] = &core->c;
@@ -119,7 +122,7 @@ cpu_core_t* cpu_create_core(void)
     core->reg[0x19] = &core->ml;
     core->reg[0x1A] = &core->mh;
 
-    for(uint8_t i; i < 0x1A; i++)
+    for(uint8_t i = 0; i < 0x1A; i++)
         *core->reg[i] = 0x00;
 
     return core;
