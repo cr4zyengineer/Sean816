@@ -1,3 +1,0 @@
-Vulnerability ID: 2
-Vulnerability Type: Causing of uncontrolled emulator termination
-Details: A attacker might be able to cause the uncontrolled termination of the emulator by using illegal register ids, the issue was addressed with improved logic

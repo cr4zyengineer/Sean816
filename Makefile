@@ -6,8 +6,6 @@ Sean816AsmS:
 	make -C Sean816Asm
 
 Sean816EmuS:
-	make -C Device/Template
 	make -C Device/Serial
-	make -C Device/LazyDisplay
-	clang *.c cpu/*.c -o Sean816
-	./Sean816 -device Device/Template/TemplateDevice.so -device Device/Serial/Serial.so -device Device/LazyDisplay/LazyDisplay.so Sean816Asm/test.bin
+	clang *.c cpu/*.c rom/*.c -o Sean816
+	./Sean816 -device Device/Serial/Serial.so Sean816Asm/test.bin

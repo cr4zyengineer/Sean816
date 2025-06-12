@@ -91,8 +91,8 @@ cpu_core_t* cpu_create_core(void)
     core->mh = 0;
     core->cmp = 0;
 
-    for(int i = 0x00; i < 257; i++)
-        core->reg[i] = &core->a;
+    //for(int i = 0x00; i < 257; i++)
+    //    core->reg[i] = &core->a;
 
     core->reg[0x00] = &core->a;     // Mapping registers so they are easier to get, like the opcode table thingy
     core->reg[0x01] = &core->b;
@@ -122,8 +122,8 @@ cpu_core_t* cpu_create_core(void)
     core->reg[0x19] = &core->ml;
     core->reg[0x1A] = &core->mh;
 
-    for(uint8_t i = 0; i < 0x1A; i++)
-        *core->reg[i] = 0x00;
+    /*for(uint8_t i = 0; i < 0x1A; i++)
+        *core->reg[i] = 0x00;*/
 
     return core;
 }
@@ -139,7 +139,6 @@ void cpu_exec_core(cpu_core_t *core)
     while(1)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
-
         instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes
         if(instruction)
             instruction(core);              // Execute instruction

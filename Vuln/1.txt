@@ -1,3 +1,0 @@
-Vulnerability ID: 1
-Vulnerability Type: Causing of uncontrolled emulator termination
-Details: A attacker might be able to cause the uncontrolled termination of the emulator by using illegal instruction opcodes, the issue was addressed with improved checks

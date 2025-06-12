@@ -10,6 +10,8 @@
 #include "device.h"
 #include "cpu.h"
 
+void binload(const char *path);
+
 int main(int argc, char **argv)
 {
     if(argc < 2)
@@ -38,11 +40,13 @@ int main(int argc, char **argv)
     }
 
     // Load binary
-    memory_load_binary(argv[argc - 1]);
+    /*memory_load_binary(argv[argc - 1]);
 
     // Execute code
     cpu_core_t *core = cpu_create_core();
-    cpu_exec_core(core);
+    cpu_exec_core(core);*/
+
+    binload(argv[argc - 1]);
 
     return 0;
 }

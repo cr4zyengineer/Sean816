@@ -11,7 +11,7 @@
 #include "libasmfile.h"
 #include "code.h"
 #include "../cpu.h"
-#include "../memory.h"
+#include "../rom/header.h"
 
 typedef struct {
     char *modified_str;
@@ -25,6 +25,8 @@ static uint8_t binary[UINT16_MAX];
 static LABEL symbols[UINT16_MAX];
 static uint16_t sym_count = 0;
 static uint16_t roffset = 0;
+static uint16_t reloc_count = 0;
+static uint16_t reloc_offsets[UINT16_MAX];
 
 LABEL labelcheck(const char *input) {
     LABEL result;
@@ -53,39 +55,12 @@ void insertSymbolAddress(char *symbol_str)
     bool label_found = false;
 
     if (symbol_str[0] == '*') {
-        // Handle case like *LABEL+3 or *LABEL+0x03
         char label[256] = {0};
-        char *plus_pos = strchr(symbol_str, '+');
-        int offset_val = 0;
-
-        if (plus_pos) {
-            // Extract label (between '*' and '+')
-            strncpy(label, symbol_str + 1, plus_pos - symbol_str - 1);
-            label[plus_pos - symbol_str - 1] = '\0';
-
-            // Determine offset value (hex or decimal)
-            if (strstr(plus_pos + 1, "0x") == plus_pos + 1 || strstr(plus_pos + 1, "0X") == plus_pos + 1) {
-                offset_val = (int)strtol(plus_pos + 1, NULL, 16);
-            } else {
-                offset_val = atoi(plus_pos + 1);
-            }
-        } else {
-            // Just *LABEL
-            strcpy(label, symbol_str + 1);
-        }
-
+        strcpy(label, symbol_str + 1);
         for (int h = 0; h < sym_count; h++) {
             if (symbols[h].had_colon && strcmp(label, symbols[h].modified_str) == 0) {
-                sprintf(raw[raw_i][1], "H%d", symbols[h].offset + offset_val);
-                label_found = true;
-                break;
-            }
-        }
-    } else {
-        // Original label handling
-        for (int h = 0; h < sym_count; h++) {
-            if (symbols[h].had_colon && strcmp(symbol_str + 1, symbols[h].modified_str) == 0) {
-                sprintf(symbol_str, "H%d", symbols[h].offset);
+                reloc_offsets[reloc_count++] = roffset;
+                sprintf(raw[raw_i][1], "H%d", symbols[h].offset);
                 label_found = true;
                 break;
             }
@@ -93,6 +68,7 @@ void insertSymbolAddress(char *symbol_str)
     }
 
     if (!label_found) {
+        reloc_offsets[reloc_count++] = roffset;
         sprintf(symbol_str, "H%u", roffset + atoi(symbol_str));
     }
 }
@@ -123,7 +99,7 @@ int main(int argc, char *argv[]) {
 
     raw = read_file(argv[1]);
 
-    printf("[*] getting label addresses\n");
+    printf("[*] Getting label addresses\n");
     for (int i = 0; i < MAX_LINES; i++) {
 
         // Patch for the helper instructions that take up more space
@@ -140,8 +116,7 @@ int main(int argc, char *argv[]) {
 
             symbols[sym_count] = labelcheck(raw[i][j]);
             if(symbols[sym_count].had_colon) {
-                symbols[sym_count].offset = roffset + MEMORY_MAPPED_IO_REGION_SIZE;
-                printf("%s => %p\n", symbols[sym_count].modified_str, (void*)(uintptr_t)symbols[sym_count].offset - MEMORY_MAPPED_IO_REGION_SIZE);
+                symbols[sym_count].offset = roffset;
                 sym_count++;
                 i++;
 
@@ -382,11 +357,34 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-    printf("[*] binary size: %db\n", roffset);
-    printf("[*] dump to %s\n", argv[2]);
 
-    storeasm816(argv[2], binary, roffset);
+    sean816_rom_executable_header_t *header = malloc(sizeof(sean816_rom_executable_header_t));
+    header->magic = SEAN816_HEADER_MAGIC;
+    header->entry = 0x00;
+    header->reloc_count = reloc_count;
+
+    // NOTE: Here we prepare buffers before the copy over
+    uint8_t *header_buffer = (uint8_t*)header;
+    uint8_t *reloc_buffer = (uint8_t*)&reloc_offsets;
+
+    // Generating final binary
+    uint16_t final_offset = 0;
+    uint16_t old_offset = 0;
+    uint8_t final_binary[UINT16_MAX];
+
+    for(final_offset = 0; final_offset < sizeof(sean816_rom_executable_header_t); final_offset++)
+        final_binary[final_offset] = header_buffer[final_offset];
+
+    for(old_offset = final_offset; final_offset < ((sizeof(uint16_t) * reloc_count) + old_offset); final_offset++)
+        final_binary[final_offset] = reloc_buffer[final_offset - old_offset];
+
+    uint16_t binary_start_offset = final_offset;
+    memcpy((void*)(final_binary + binary_start_offset), binary, roffset);
+
+    storeasm816(argv[2], final_binary, final_offset + roffset);
     free_content(raw);
+
+    printf("[*] binary size: %db\n", final_offset + roffset);
 
     printf("[*] done :3\n");
 

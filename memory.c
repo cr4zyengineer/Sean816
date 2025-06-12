@@ -15,7 +15,7 @@
  * NOTE: 16bit maximum integer because its a 8bit cpu with 16bit addressing
  *
  */
-static uint8_t mem[UINT16_MAX];
+uint8_t mem[UINT16_MAX];
 memory_io_mapping_t iomem[MEMORY_MAPPED_IO_REGION_SIZE];
 
 /*
