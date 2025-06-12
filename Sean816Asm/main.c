@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <errno.h>
+#include <limits.h>
 #include <ctype.h>
 #include "libasmfile.h"
 #include "code.h"
@@ -88,6 +90,28 @@ int is_hex16_format(const char *str) {
     return 1;
 }
 
+void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
+{
+    uint8_t param = 0;
+    uint8_t raw_i_n = 1;
+
+    while (raw_i_n < 6 && s[raw_i_n] != NULL && s[raw_i_n][0] != ';')
+    {
+        if (is_hex16_format(s[raw_i_n]) || s[raw_i_n][0] == '*')
+            param += 2;
+        else
+            param++;
+
+        raw_i_n++;
+    }
+
+    if (param < minP || param > maxP)
+    {
+        printf("Error:%d: Expected %d to %d parameters, but got %d\n", raw_i + 1, minP, maxP, param);
+        exit(1);
+    }
+}
+
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
@@ -148,66 +172,94 @@ int main(int argc, char *argv[]) {
         }
 
         if (strcmp("HALT", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 0, 0);
             binary[roffset++] = OP_HLT;
         } else if (strcmp("LOAD", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 3);
             binary[roffset++] = OP_LOAD;
         } else if (strcmp("LIMM", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_LOAD;
             binary[roffset++] = 0x00;
         } else if (strcmp("LMEM", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 3, 3);
             binary[roffset++] = OP_LOAD;
             binary[roffset++] = 0x01;
         } else if (strcmp("STORE", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 3, 3);
             binary[roffset++] = OP_STORE;
         } else if (strcmp("LOADLH", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;
         } else if (strcmp("STORELH", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_STORELH;
         } else if (strcmp("LLH", raw[raw_i][0]) == 0) {         // Alternative names to shorten the instruction name
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;
         } else if (strcmp("SLH", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_STORELH;
         } else if (strcmp("MOV", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_MOV;
         } else if (strcmp("ADD", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_ADD;
         } else if (strcmp("SUB", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_SUB;
         } else if (strcmp("MUL", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_MUL;
         } else if (strcmp("DIV", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_DIV;
         } else if (strcmp("INC", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_INC;
         } else if (strcmp("DEC", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_DEC;
         } else if (strcmp("JMP", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JMP;
         } else if (strcmp("CMP", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_CMP;
         } else if (strcmp("JE", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JE;
         } else if (strcmp("JNE", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JNE;
         } else if (strcmp("JG", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JG;
         } else if (strcmp("JL", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JL;
         } else if (strcmp("PUSH", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_PUSH;
         } else if (strcmp("POP", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_POP;
         } else if (strcmp("CALL", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_CALL;
         } else if (strcmp("RET", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 0, 0);
             binary[roffset++] = OP_RET;
         } else {
-            roffset++;
+            printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
+            return 1;
         }
 
+        char *input = NULL;
         for (int j = 0; j < 5; j++) {
             if (raw[raw_i][j + 1] != NULL) {
-                char *input = raw[raw_i][j + 1];
+                input = raw[raw_i][j + 1];
 
                 if (input == NULL) break;
                 if (input[0] == ';') break;
@@ -353,6 +405,8 @@ int main(int argc, char *argv[]) {
                     binary[roffset++] = (uint8_t)(number);
                 }
             } else {
+                //printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
+                //return 1;
                 break;
             }
         }
