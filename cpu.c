@@ -91,15 +91,6 @@ cpu_core_t* cpu_create_core(void)
     core->mh = 0;
     core->cmp = 0;
 
-    core->a = 0;                    // Setting(Initilizing) up registers
-    core->b = 0;
-    core->c = 0;
-    core->d = 0;
-    core->e = 0;
-    core->f = 0;
-    core->g = 0;
-    core->h = 0;
-
     core->reg[0x00] = &core->a;     // Mapping registers so they are easier to get, like the opcode table thingy
     core->reg[0x01] = &core->b;
     core->reg[0x02] = &core->c;
@@ -127,6 +118,9 @@ cpu_core_t* cpu_create_core(void)
     core->reg[0x18] = &core->mo;
     core->reg[0x19] = &core->ml;
     core->reg[0x1A] = &core->mh;
+
+    for(uint8_t i; i < 0x1A; i++)
+        *core->reg[i] = 0x00;
 
     return core;
 }
