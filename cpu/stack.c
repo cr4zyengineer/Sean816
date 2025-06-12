@@ -4,6 +4,7 @@
  */
 #include "../cpu.h"
 #include "../memory.h"
+#include <stdio.h>
 
 static void cpu_prvt_push(cpu_core_t *core, uint8_t value)
 {
