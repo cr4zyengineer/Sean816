@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
     roffset = 0;
     printf("[*] compile\n");
     for (raw_i = 0; raw_i < MAX_LINES; raw_i++) {
-        if (raw[raw_i] == NULL || raw[raw_i][0] == NULL) {
+        if (raw[raw_i] == NULL || raw[raw_i][0] == NULL || raw[raw_i][0][0] == ';') {
             continue;
         }
 
