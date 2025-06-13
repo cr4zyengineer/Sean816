@@ -47,6 +47,7 @@ int main(int argc, char **argv)
     cpu_exec_core(core);*/
 
     binload(argv[argc - 1]);
+    binload(argv[argc - 1]);
 
     return 0;
 }

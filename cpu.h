@@ -65,7 +65,7 @@ typedef struct {
     uint8_t h;
 
     // Register array for offsetting
-    uint8_t *reg[UINT8_MAX];
+    uint8_t *reg[0xFF];
 } cpu_core_t;
 
 /*
