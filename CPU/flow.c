@@ -27,22 +27,6 @@ void cpu_cmp(cpu_core_t *core)
         core->cmp = 2;
 }
 
-void cpu_scmp(cpu_core_t *core)
-{
-    memory_read(core->pc++, &core->ta);
-    memory_read(core->pc++, &core->tb);
-
-    int8_t a = (int8_t)(*core->reg[core->ta]);
-    int8_t b = (int8_t)(*core->reg[core->tb]);
-
-    if(a == b)              // JE would suceed
-        core->cmp = 0;
-    else if(a > b)          // JG, JNE would succeed
-        core->cmp = 1;
-    else if(a < b)          // JL, JNE would suceed
-        core->cmp = 2;
-}
-
 void cpu_je(cpu_core_t *core)
 {
     if(core->cmp != 0)

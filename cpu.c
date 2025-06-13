@@ -19,14 +19,9 @@ void cpu_mul(cpu_core_t *core);
 void cpu_div(cpu_core_t *core);
 void cpu_inc(cpu_core_t *core);
 void cpu_dec(cpu_core_t *core);
-void cpu_sadd(cpu_core_t *core);
-void cpu_ssub(cpu_core_t *core);
-void cpu_smul(cpu_core_t *core);
-void cpu_sdiv(cpu_core_t *core);
 
 void cpu_jmp(cpu_core_t *core);
 void cpu_cmp(cpu_core_t *core);
-void cpu_scmp(cpu_core_t *core);
 void cpu_je(cpu_core_t *core);
 void cpu_jne(cpu_core_t *core);
 void cpu_jg(cpu_core_t *core);
@@ -55,14 +50,9 @@ instruction_t opcode_table[UINT8_MAX] = {
     cpu_div,
     cpu_inc,
     cpu_dec,
-    cpu_sadd,
-    cpu_ssub,
-    cpu_smul,
-    cpu_sdiv,
 
     cpu_jmp,
     cpu_cmp,
-    cpu_scmp,
     cpu_je,
     cpu_jne,
     cpu_jg,
@@ -138,7 +128,7 @@ void cpu_exec_core(cpu_core_t *core)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
 
-        if(instruction_id == OP_HLT) return;
+        if(instruction_id == OP_HLT || instruction_id > 0x15) return;
 
         instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes
         if(instruction)

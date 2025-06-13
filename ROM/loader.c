@@ -22,13 +22,17 @@ void binload(const char *path)
 {
     // Open file
     int fd = open(path, O_RDONLY);
+    if(fd == -1)
+    {
+        printf("Error: Couldnt open binary at %s\n", path);
+        return;
+    }
 
     // Read its content slowly
     struct stat fileStat;
     fstat(fd, &fileStat);
 
     // Now we read loop
-    printf("[*] loading binary at %p\n", (void*)(uintptr_t)(offset));
     uint8_t *vbuf = &mem[offset];
     ssize_t rbytes = read(fd, vbuf, fileStat.st_size);
 
@@ -59,7 +63,6 @@ void binload(const char *path)
     }
 
     uint16_t entry_point = binary_offset + header->entry;
-    printf("[*] entry point at %p\n", (void*)(uintptr_t)entry_point);
 
     // Now were good to go?
     offset += rbytes;

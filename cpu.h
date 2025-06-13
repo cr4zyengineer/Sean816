@@ -89,25 +89,20 @@ enum cpu_opcodes {
     OP_DIV = 0x09,
     OP_INC = 0x0A,
     OP_DEC = 0x0B,
-    OP_SADD = 0x0C,
-    OP_SSUB = 0x0D,
-    OP_SMUL = 0x0E,
-    OP_SDIV = 0x0F,
 
     // Flow control
-    OP_JMP = 0x10,
-    OP_CMP = 0x11,
-    OP_SCMP = 0x12,
-    OP_JE = 0x13,
-    OP_JNE = 0x14,
-    OP_JG = 0x15,
-    OP_JL = 0x16,
+    OP_JMP = 0x0C,
+    OP_CMP = 0x0D,
+    OP_JE = 0x0E,
+    OP_JNE = 0x0F,
+    OP_JG = 0x10,
+    OP_JL = 0x11,
 
     // Stack
-    OP_PUSH = 0x17,
-    OP_POP = 0x18,
-    OP_CALL = 0x19,
-    OP_RET = 0x1A
+    OP_PUSH = 0x12,
+    OP_POP = 0x13,
+    OP_CALL = 0x14,
+    OP_RET = 0x15
 };
 
 typedef void (*instruction_t)(cpu_core_t*);

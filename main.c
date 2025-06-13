@@ -42,8 +42,5 @@ int main(int argc, char **argv)
     // Execute
     binload(argv[argc - 1]);
 
-    // NOTE: This to proof reloc table works
-    binload(argv[argc - 1]);
-
     return 0;
 }
