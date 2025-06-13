@@ -6,6 +6,212 @@
 
 I made this project to learn more about CPUs and how they internally operate and to demonstrate how they work. Im happy to write this documentation for you guys. It was always my dream to write a working virtual CPU that is efficient. I already did it once in my previous 8bit CPU with 8bit addressing which limited many things. I dont feel comfortable yet adding full 16bit support to the Sean CPU series. Tho my 16bit CPU will likely be called Sean1616 as it will be 16bit CPU with 16bit addressing and to not be mistaken with my missnamed Sean16 CPU which was my first virtual CPU(SoC) but was basically only 8bit. I will explain how to craft such virtual CPU in this documentary, but also how to create a MMU(MemoryManagementUnit) and how to create a RAM as both of these things are necessary, aswell as how to map IO memory.
 
+## Instruction Set
+
+#### Execution
+
+<table>
+    <tr>
+        <td>Instruction</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Details</td>
+    </tr>
+    <tr>
+        <td>HLT</td>
+        <td colspan="4"></td>
+        <td>Stops code execution.</td>
+    </tr>
+</table>
+
+#### Data
+
+<table>
+    <tr>
+        <td>Instruction</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Details</td>
+    </tr>
+    <tr>
+        <td>LOAD</td>
+        <td>Mode</td>
+        <td>Register</td>
+        <td>Imm8</td>
+        <td>Imm8</td>
+        <td>Loads a intermediate or memory from a memory address to register. You only need the second register when you load from memory. 0x00 is the intermediate mode and 0x01 is the memory mode.</td>
+    </tr>
+    <tr>
+        <td>STORE</td>
+        <td>Register</td>
+        <td colspan="2">Address</td>
+        <td></td>
+        <td>Stores a register to a memory address. The address is contained of two intermediate 8bit values.</td>
+    </tr>
+    <tr>
+        <td>LOADLH</td>
+        <td>Register</td>
+        <td colspan="3"></td>
+        <td>Loads memory from a memory address(resulting from register ML and MH) to a register.</td>
+    </tr>
+    <tr>
+        <td>STORELH</td>
+        <td>Register</td>
+        <td colspan="3"></td>
+        <td>Stores a register to a memory address(resulting from register ML and MH).</td>
+    </tr>
+    <tr>
+        <td>MOV</td>
+        <td>Register</td>
+        <td>Register</td>
+        <td colspan="2"></td>
+        <td>Moves the value from the second passed register to the first(Note that the value is not removed from the 2nd passed register or swapped).</td>
+    </tr>
+</table>
+
+#### Arithmetic
+
+<table>
+    <tr>
+        <td>Instruction</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Details</td>
+    </tr>
+    <tr>
+        <td>ADD</td>
+        <td>Register</td>
+        <td>Register</td>
+        <td colspan="2"></td>
+        <td>Additions the 1st and the 2nd passed register and stores the result in register A which is the Acumulator.</td>
+    </tr>
+    <tr>
+        <td>SUB</td>
+        <td>Register</td>
+        <td>Register</td>
+        <td colspan="2"></td>
+        <td>Subtracts the 1st and the 2nd passed register and stores the result in register A which is the Acumulator.</td>
+    </tr>
+    <tr>
+        <td>MUL</td>
+        <td>Register</td>
+        <td>Register</td>
+        <td colspan="2"></td>
+        <td>Multiplicates the 1st and the 2nd passed register and stores the result in register A which is the Acumulator.</td>
+    </tr>
+    <tr>
+        <td>DIV</td>
+        <td>Register</td>
+        <td>Register</td>
+        <td colspan="2"></td>
+        <td>Divides the 1st and the 2nd passed register and stores the result in register A which is the Acumulator.</td>
+    </tr>
+    <tr>
+        <td>INC</td>
+        <td>Register</td>
+        <td colspan="3"></td>
+        <td>Increments the passed register.</td>
+    </tr>
+    <tr>
+        <td>DEC</td>
+        <td>Register</td>
+        <td colspan="3"></td>
+        <td>Decrements the passed register.</td>
+    </tr>
+</table>
+
+#### Flow Control
+
+<table>
+    <tr>
+        <td>Instruction</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Details</td>
+    </tr>
+    <tr>
+        <td>JMP</td>
+        <td colspan="2">Address</td>
+        <td colspan="2"></td>
+        <td>Jumps to the passed memory address.</td>
+    </tr>
+    <tr>
+        <td>CMP</td>
+        <td>Register</td>
+        <td>Register</td>
+        <td colspan="2"></td>
+        <td>Compares the 1st and the 2nd register passed and sets the cmp flag in the cpu core executing the instruction.</td>
+    </tr>
+    <tr>
+        <td>JE</td>
+        <td colspan="2">Address</td>
+        <td colspan="2"></td>
+        <td>Jumps to the passed memory address in case the cmp flag indicates that the registers compared were equal.</td>
+    </tr>
+    <tr>
+        <td>JNE</td>
+        <td colspan="2">Address</td>
+        <td colspan="2"></td>
+        <td>Jumps to the passed memory address in case the cmp flag indicates that the registers compared were not equal.</td>
+    </tr>
+    <tr>
+        <td>JG</td>
+        <td colspan="2">Address</td>
+        <td colspan="2"></td>
+        <td>Jumps to the passed memory address in case the cmp flag indicates that the 1st register passed was bigger than the 2nd.</td>
+    </tr>
+    <tr>
+        <td>JL</td>
+        <td colspan="2">Address</td>
+        <td colspan="2"></td>
+        <td>Jumps to the passed memory address in case the cmp flag indicates that the 1st register passed was smaller than the 2nd.</td>
+    </tr>
+</table>
+
+#### Stack
+
+<table>
+    <tr>
+        <td>Instruction</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Arg</td>
+        <td>Details</td>
+    </tr>
+    <tr>
+        <td>PUSH</td>
+        <td>Register</td>
+        <td colspan="3"></td>
+        <td>Pushes value of register passed to onto the stack.</td>
+    </tr>
+    <tr>
+        <td>POP</td>
+        <td>Register</td>
+        <td colspan="3"></td>
+        <td>Pops value of of the current stack to the register passed.</td>
+    </tr>
+    <tr>
+        <td>CALL</td>
+        <td colspan="2">Address</td>
+        <td colspan="2"></td>
+        <td>Jumps onto a passed address but with the differency that its a call, so its more isolated and change friendly to the CPU and you can return to the caller without massive constructions.</td>
+    </tr>
+    <tr>
+        <td>RET</td>
+        <td colspan="4"></td>
+        <td>Returns back to caller.</td>
+    </tr>
+</table>
+
 ## Todo
 
 #### CPU
