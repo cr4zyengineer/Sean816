@@ -10,15 +10,18 @@ I made this project to learn more about CPUs and how they internally operate and
 
 #### CPU
 
-- [ ] Threading from scratch, with a new instruction `THR` `THS`(`THR`/`THS` stands for "Thread Run"/"Thread stop", I already know how to implement threading, threading basically means that the CPU is rapidly switching tasks, thats also for what i've created core stuff in this CPU)
-- [ ] Interupt instruction(`INT`) to basically later do syscalls in the kernel which will be in Ring 0.
-- [ ] A FileSystem Device in ./Devices for more abilities
-- [ ] MemoryManagementUnit (The MMU is responsible for example to create virtual address spaces for other processes)
-- [ ] Ring based protection levels (This will be required for kernels and stuff to correctly do things, but first we need MMU)
-
-##### Compiler
-
-- [ ] A lot of fixes, hahaha
+- [x] Execution flow instructions
+- [x] Data instructions (ie. loading, storing and moving data)
+- [x] Arithmetic instructions (basically math)
+- [x] Stack memory
+- [x] Control flow instructions (Jumping to a memory address, calling a address, returning back to the caller)
+- [x] Device loader (loads usermade devices specified as a command arg)
+- [x] ROM (the first code the cpu always executes to i.e run a kernel image)
+- [ ] Interruption handler (for the corresponding `INT` instruction, which will be necessary for the kernel to communicate with the BIOS(ROM) and vise versa, and for the userspace process to communicate with the kernel)
+- [ ] Threading (It will be a 1 core 4 thread CPU)
+- [ ] Real and protected mode (protected mode will be a 1 time register, once set there is no way to set it back and the currently running thread will always be in protected mode with restrictions set by the kernel image)
+- [ ] MMU (Manages memory, adds virtual address spaces to cores so that userspace processes cannot access the memory)
+- [ ] MMU instructions for the kernel to manage the page table added by the MMU
 
 ##### General
 
