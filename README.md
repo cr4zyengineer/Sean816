@@ -6,6 +6,43 @@
 
 I made this project to learn more about CPUs and how they internally operate and to demonstrate how they work. Im happy to write this documentation for you guys. It was always my dream to write a working virtual CPU that is efficient. I already did it once in my previous 8bit CPU with 8bit addressing which limited many things. I dont feel comfortable yet adding full 16bit support to the Sean CPU series. Tho my 16bit CPU will likely be called Sean1616 as it will be 16bit CPU with 16bit addressing and to not be mistaken with my missnamed Sean16 CPU which was my first virtual CPU(SoC) but was basically only 8bit. I will explain how to craft such virtual CPU in this documentary, but also how to create a MMU(MemoryManagementUnit) and how to create a RAM as both of these things are necessary, aswell as how to map IO memory.
 
+## Register
+
+The CPU features in total 30 register of which 27 are directly read and writable.
+
+<table>
+    <tr>
+        <td>Register Class</td>
+        <td>Registers</td>
+        <td>Details</td>
+    </tr>
+    <tr>
+        <td>Special</td>
+        <td><code>PC</code>,<code>BP</code>,<code>SP</code></td>
+        <td>Registers to keep track of what the CPU is executing and jumping to.</td>
+    </tr>
+    <tr>
+        <td>Memory</td>
+        <td><code>MO (Deprecated)</code>,<code>ML</code>,<code>MH</code></td>
+        <td>Registers to be able to write to arbitary memory addresses.</td>
+    </tr>
+    <tr>
+        <td>Return</td>
+        <td><code>RA</code>,<code>RB</code>,<code>RC</code>,<code>RD</code>,<code>RE</code>,<code>RF</code>,<code>RG</code>,<code>RH</code></td>
+        <td>Registers to get the returning functions registers.</td>
+    </tr>
+    <tr>
+        <td>Global</td>
+        <td><code>GA</code>,<code>GB</code>,<code>GC</code>,<code>GD</code>,<code>GE</code>,<code>GF</code>,<code>GG</code>,<code>GH</code></td>
+        <td>Registers that are globally fixed in the core and wont change during the entire exeuction context, unless wanted.</td>
+    </tr>
+    <tr>
+        <td>General</td>
+        <td><code>A(Accumulator)</code>,<code>B</code>,<code>C</code>,<code>D</code>,<code>E</code>,<code>F</code>,<code>G</code>,<code>H</code></td>
+        <td>Registers that are for any purpose the person wishes too. The general registers..</td>
+    </tr>
+</table>
+
 ## Instruction Set
 
 #### Execution
