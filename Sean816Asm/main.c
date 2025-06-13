@@ -30,6 +30,18 @@ static uint16_t roffset = 0;
 static uint16_t reloc_count = 0;
 static uint16_t reloc_offsets[UINT16_MAX];
 
+bool is_number(const char *str) {
+    if (str == NULL || *str == '\0') return false;
+    if (*str == '-' || *str == '+') str++;
+    if (*str == '\0') return false;
+
+    while (*str) {
+        if (!isdigit((unsigned char)*str)) return false;
+        str++;
+    }
+    return true;
+}
+
 LABEL labelcheck(const char *input) {
     LABEL result;
     size_t len = strlen(input);
@@ -128,7 +140,7 @@ int main(int argc, char *argv[]) {
 
         // Patch for the helper instructions that take up more space
         if(raw[i][0] != NULL)
-            if(strcmp(raw[i][0], "LIMM") == 0 || strcmp(raw[i][0], "LMEM") == 0)
+            if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
                 roffset++;
 
         for (int j = 0; j < MAX_WORDS; j++) {
@@ -146,7 +158,7 @@ int main(int argc, char *argv[]) {
 
                 // We need to recheck the patch when a label was found otherwise some labels will be misaligned!
                 if(raw[i][0] != NULL)
-                    if(strcmp(raw[i][0], "LIMM") == 0 || strcmp(raw[i][0], "LMEM") == 0)
+                    if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
                         roffset++;
 
 
@@ -171,84 +183,84 @@ int main(int argc, char *argv[]) {
             raw_i++;
         }
 
-        if (strcmp("HALT", raw[raw_i][0]) == 0) {
+        if (strcmp("halt", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 0, 0);
             binary[roffset++] = OP_HLT;
-        } else if (strcmp("LOAD", raw[raw_i][0]) == 0) {
+        } else if (strcmp("load", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 3);
             binary[roffset++] = OP_LOAD;
-        } else if (strcmp("LIMM", raw[raw_i][0]) == 0) {
+        } else if (strcmp("limm", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_LOAD;
             binary[roffset++] = 0x00;
-        } else if (strcmp("LMEM", raw[raw_i][0]) == 0) {
+        } else if (strcmp("lmem", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 3, 3);
             binary[roffset++] = OP_LOAD;
             binary[roffset++] = 0x01;
-        } else if (strcmp("STORE", raw[raw_i][0]) == 0) {
+        } else if (strcmp("store", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 3, 3);
             binary[roffset++] = OP_STORE;
-        } else if (strcmp("LOADLH", raw[raw_i][0]) == 0) {
+        } else if (strcmp("loadlh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;
-        } else if (strcmp("STORELH", raw[raw_i][0]) == 0) {
+        } else if (strcmp("storelh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_STORELH;
-        } else if (strcmp("LLH", raw[raw_i][0]) == 0) {         // Alternative names to shorten the instruction name
+        } else if (strcmp("llh", raw[raw_i][0]) == 0) {         // Alternative names to shorten the instruction name
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;
-        } else if (strcmp("SLH", raw[raw_i][0]) == 0) {
+        } else if (strcmp("slh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_STORELH;
-        } else if (strcmp("MOV", raw[raw_i][0]) == 0) {
+        } else if (strcmp("mov", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_MOV;
-        } else if (strcmp("ADD", raw[raw_i][0]) == 0) {
+        } else if (strcmp("add", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_ADD;
-        } else if (strcmp("SUB", raw[raw_i][0]) == 0) {
+        } else if (strcmp("sub", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_SUB;
-        } else if (strcmp("MUL", raw[raw_i][0]) == 0) {
+        } else if (strcmp("mul", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_MUL;
-        } else if (strcmp("DIV", raw[raw_i][0]) == 0) {
+        } else if (strcmp("div", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_DIV;
-        } else if (strcmp("INC", raw[raw_i][0]) == 0) {
+        } else if (strcmp("inc", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_INC;
-        } else if (strcmp("DEC", raw[raw_i][0]) == 0) {
+        } else if (strcmp("dec", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_DEC;
-        } else if (strcmp("JMP", raw[raw_i][0]) == 0) {
+        } else if (strcmp("jmp", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JMP;
-        } else if (strcmp("CMP", raw[raw_i][0]) == 0) {
+        } else if (strcmp("cmp", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_CMP;
-        } else if (strcmp("JE", raw[raw_i][0]) == 0) {
+        } else if (strcmp("je", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JE;
-        } else if (strcmp("JNE", raw[raw_i][0]) == 0) {
+        } else if (strcmp("jne", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JNE;
-        } else if (strcmp("JG", raw[raw_i][0]) == 0) {
+        } else if (strcmp("jg", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JG;
-        } else if (strcmp("JL", raw[raw_i][0]) == 0) {
+        } else if (strcmp("jl", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_JL;
-        } else if (strcmp("PUSH", raw[raw_i][0]) == 0) {
+        } else if (strcmp("push", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_PUSH;
-        } else if (strcmp("POP", raw[raw_i][0]) == 0) {
+        } else if (strcmp("pop", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_POP;
-        } else if (strcmp("CALL", raw[raw_i][0]) == 0) {
+        } else if (strcmp("call", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_CALL;
-        } else if (strcmp("RET", raw[raw_i][0]) == 0) {
+        } else if (strcmp("ret", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 0, 0);
             binary[roffset++] = OP_RET;
         } else {
@@ -256,158 +268,106 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        char *input = NULL;
         for (int j = 0; j < 5; j++) {
-            if (raw[raw_i][j + 1] != NULL) {
-                input = raw[raw_i][j + 1];
-
-                if (input == NULL) break;
-                if (input[0] == ';') break;
-
-                if(input[0] == '*') {
-                    insertSymbolAddress(input);
-                    input++;
-                    uint16_t value = (uint16_t)atoi(input);
-                    uint8_t *array = (uint8_t *)&value;
-                    binary[roffset++] = array[1];
-                    binary[roffset++] = array[0];
-                }
-                else if(input[0] == '%') {
-                    switch(input[1]) {
-                        case 'A':
-                            binary[roffset++] = 0x00;
-                            break;
-                        case 'B':
-                            binary[roffset++] = 0x01;
-                            break;
-                        case 'C':
-                            binary[roffset++] = 0x02;
-                            break;
-                        case 'D':
-                            binary[roffset++] = 0x03;
-                            break;
-                        case 'E':
-                            binary[roffset++] = 0x04;
-                            break;
-                        case 'F':
-                            binary[roffset++] = 0x05;
-                            break;
-                        case 'H':
-                            binary[roffset++] = 0x07;
-                            break;
-                        case 'R':
-                            switch(input[2])
-                            {
-                                case 'A':
-                                    binary[roffset++] = 0x08;
-                                    break;
-                                case 'B':
-                                    binary[roffset++] = 0x09;
-                                    break;
-                                case 'C':
-                                    binary[roffset++] = 0x0A;
-                                    break;
-                                case 'D':
-                                    binary[roffset++] = 0x0B;
-                                    break;
-                                case 'E':
-                                    binary[roffset++] = 0x0C;
-                                    break;
-                                case 'F':
-                                    binary[roffset++] = 0x0D;
-                                    break;
-                                case 'G':
-                                    binary[roffset++] = 0x0E;
-                                    break;
-                                case 'H':
-                                    binary[roffset++] = 0x0F;
-                                    break;
-                                default:
-                                    binary[roffset++] = 0x00;
-                            }
-                            break;
-                        case 'G':
-                            switch(input[2])
-                            {
-                                case 'A':
-                                    binary[roffset++] = 0x10;
-                                    break;
-                                case 'B':
-                                    binary[roffset++] = 0x11;
-                                    break;
-                                case 'C':
-                                    binary[roffset++] = 0x12;
-                                    break;
-                                case 'D':
-                                    binary[roffset++] = 0x13;
-                                    break;
-                                case 'E':
-                                    binary[roffset++] = 0x14;
-                                    break;
-                                case 'F':
-                                    binary[roffset++] = 0x15;
-                                    break;
-                                case 'G':
-                                    binary[roffset++] = 0x16;
-                                    break;
-                                case 'H':
-                                    binary[roffset++] = 0x17;
-                                    break;
-                                default:
-                                    binary[roffset++] = 0x06;
-                            }
-                            break;
-                        case 'M':
-                            switch(input[2])
-                            {
-                                case 'O':
-                                    binary[roffset++] = 0x18;
-                                    break;
-                                case 'L':
-                                    binary[roffset++] = 0x19;
-                                    break;
-                                case 'H':
-                                    binary[roffset++] = 0x1A;
-                                    break;
-                                default:
-                                    binary[roffset++] = 0x00;
-                            }
-                            break;
-                        default:
-                            binary[roffset++] = 0x00;
-                            break;
-                    }
-                }
-                else if (input[0] == 'H') {
-                    input++; // Skip 'H'
-                    uint16_t value = (uint16_t)atoi(input);
-                    uint8_t *array = (uint8_t *)&value;
-                    binary[roffset++] = array[1];
-                    binary[roffset++] = array[0];
-                }
-                else if (strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
-                    size_t hex_digit_count = strlen(input + 2); // how many digits after 0x
-                    unsigned long value = strtoul(input, NULL, 16); // convert hex string
-
-                    if (hex_digit_count <= 2) {
-                        // Treat as 8-bit
-                        binary[roffset++] = (uint8_t)value;
-                    } else if (hex_digit_count <= 4) {
-                        // Treat as 16-bit
-                        binary[roffset++] = (uint8_t)(value >> 8);     // High byte
-                        binary[roffset++] = (uint8_t)(value & 0xFF);   // Low byte
-                    } else {
-                        fprintf(stderr, "Invalid hex format (too large): %s\n", input);
-                    }
-                }
-                else {
-                    int number = atoi(input);
-                    binary[roffset++] = (uint8_t)(number);
-                }
-            } else {
-                //printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
-                //return 1;
+            if (raw[raw_i][j + 1] == NULL)
                 break;
+
+            char *input = raw[raw_i][j + 1];
+
+            if (input == NULL) break;
+            if (input[0] == ';') break;
+
+            if(strcmp(input, "a") == 0) {
+                binary[roffset++] = 0x00;
+            } else if(strcmp(input, "b") == 0) {
+                binary[roffset++] = 0x01;
+            } else if(strcmp(input, "c") == 0) {
+                binary[roffset++] = 0x02;
+            } else if(strcmp(input, "d") == 0) {
+                binary[roffset++] = 0x03;
+            } else if(strcmp(input, "e") == 0) {
+                binary[roffset++] = 0x04;
+            } else if(strcmp(input, "f") == 0) {
+                binary[roffset++] = 0x05;
+            } else if(strcmp(input, "g") == 0) {
+                binary[roffset++] = 0x06;
+            } else if(strcmp(input, "h") == 0) {
+                binary[roffset++] = 0x07;
+            } else if(strcmp(input, "ra") == 0) {
+                binary[roffset++] = 0x08;
+            } else if(strcmp(input, "rb") == 0) {
+                binary[roffset++] = 0x09;
+            } else if(strcmp(input, "rc") == 0) {
+                binary[roffset++] = 0x0A;
+            } else if(strcmp(input, "rd") == 0) {
+                binary[roffset++] = 0x0B;
+            } else if(strcmp(input, "re") == 0) {
+                binary[roffset++] = 0x0C;
+            } else if(strcmp(input, "rf") == 0) {
+                binary[roffset++] = 0x0D;
+            } else if(strcmp(input, "rg") == 0) {
+                binary[roffset++] = 0x0E;
+            } else if(strcmp(input, "rh") == 0) {
+                binary[roffset++] = 0x0F;
+            } else if(strcmp(input, "ga") == 0) {
+                binary[roffset++] = 0x10;
+            } else if(strcmp(input, "gb") == 0) {
+                binary[roffset++] = 0x11;
+            } else if(strcmp(input, "gc") == 0) {
+                binary[roffset++] = 0x12;
+            } else if(strcmp(input, "gd") == 0) {
+                binary[roffset++] = 0x13;
+            } else if(strcmp(input, "ge") == 0) {
+                binary[roffset++] = 0x14;
+            } else if(strcmp(input, "gf") == 0) {
+                binary[roffset++] = 0x15;
+            } else if(strcmp(input, "gg") == 0) {
+                binary[roffset++] = 0x16;
+            } else if(strcmp(input, "gh") == 0) {
+                binary[roffset++] = 0x17;
+            } else if(strcmp(input, "mo") == 0) {
+                binary[roffset++] = 0x18;
+            } else if(strcmp(input, "ml") == 0) {
+                binary[roffset++] = 0x19;
+            } else if(strcmp(input, "mh") == 0) {
+                binary[roffset++] = 0x1A;
+            } else if(strcmp(input, "spl") == 0) {
+                binary[roffset++] = 0x1B;
+            } else if(strcmp(input, "sph") == 0) {
+                binary[roffset++] = 0x1C;
+            } else if(input[0] == '*') {
+                insertSymbolAddress(input);
+                input++;
+                uint16_t value = (uint16_t)atoi(input);
+                uint8_t *array = (uint8_t *)&value;
+                binary[roffset++] = array[1];
+                binary[roffset++] = array[0];
+            } else if (input[0] == 'H') {
+                input++; // Skip 'H'
+                uint16_t value = (uint16_t)atoi(input);
+                uint8_t *array = (uint8_t *)&value;
+                binary[roffset++] = array[1];
+                binary[roffset++] = array[0];
+            } else if (strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
+                size_t hex_digit_count = strlen(input + 2); // how many digits after 0x
+                unsigned long value = strtoul(input, NULL, 16); // convert hex string
+
+                if (hex_digit_count <= 2) {
+                    // Treat as 8-bit
+                    binary[roffset++] = (uint8_t)value;
+                } else if (hex_digit_count <= 4) {
+                    // Treat as 16-bit
+                    binary[roffset++] = (uint8_t)(value >> 8);     // High byte
+                    binary[roffset++] = (uint8_t)(value & 0xFF);   // Low byte
+                } else {
+                    fprintf(stderr, "Invalid hex format (too large): %s\n", input);
+                }
+            } else if(is_number(input)) {
+                int number = atoi(input);
+                binary[roffset++] = (uint8_t)(number);
+            } else {
+                printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
+                return 1;
             }
         }
     }

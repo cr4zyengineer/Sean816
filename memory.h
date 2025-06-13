@@ -8,6 +8,7 @@
  * Definitions
  *
  */
+#define MEMORY_SIZE 0x6000
 #define MEMORY_MAPPED_IO_REGION_SIZE 0x00FF
 
 enum MemoryIOMappingType {
