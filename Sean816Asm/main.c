@@ -70,8 +70,8 @@ void insertSymbolAddress(char *symbol_str)
     }
 
     if (!label_found) {
-        reloc_offsets[reloc_count++] = roffset;
-        sprintf(symbol_str, "H%u", roffset + atoi(symbol_str));
+        printf("Error:%d: Unknown label \"%s\"\n", raw_i + 1, symbol_str + 1);
+        exit(1);
     }
 }
 
@@ -412,22 +412,33 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    sean816_rom_executable_header_t *header = malloc(sizeof(sean816_rom_executable_header_t));
-    header->magic = SEAN816_HEADER_MAGIC;
-    header->entry = 0x00;
-    header->reloc_count = reloc_count;
-
-    // NOTE: Here we prepare buffers before the copy over
-    uint8_t *header_buffer = (uint8_t*)header;
-    uint8_t *reloc_buffer = (uint8_t*)&reloc_offsets;
-
     // Generating final binary
-    uint16_t final_offset = 0;
+    uint16_t final_offset = sizeof(sean816_rom_executable_header_t);
     uint16_t old_offset = 0;
     uint8_t final_binary[UINT16_MAX];
 
-    for(final_offset = 0; final_offset < sizeof(sean816_rom_executable_header_t); final_offset++)
-        final_binary[final_offset] = header_buffer[final_offset];
+    sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&final_binary[0x00];
+    header->magic = SEAN816_HEADER_MAGIC;
+
+    bool label_found = false;
+    for (int h = 0; h < sym_count; h++) {
+        if (symbols[h].had_colon && strcmp("main", symbols[h].modified_str) == 0) {
+            header->entry = symbols[h].offset;
+            label_found = true;
+            break;
+        }
+    }
+
+    if(!label_found)
+    {
+        printf("Error:Internal: \"main\" Symbol not found!\n");
+        return 1;
+    }
+
+    header->reloc_count = reloc_count;
+
+    // NOTE: Here we prepare buffers before the copy over
+    uint8_t *reloc_buffer = (uint8_t*)&reloc_offsets;
 
     for(old_offset = final_offset; final_offset < ((sizeof(uint16_t) * reloc_count) + old_offset); final_offset++)
         final_binary[final_offset] = reloc_buffer[final_offset - old_offset];

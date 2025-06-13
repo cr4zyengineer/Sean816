@@ -58,10 +58,13 @@ void binload(const char *path)
         endianswapper(&roffset, relative_offset);
     }
 
+    uint16_t entry_point = binary_offset + header->entry;
+    printf("[*] entry point at %p\n", (void*)(uintptr_t)entry_point);
+
     // Now were good to go?
     offset += rbytes;
 
     cpu_core_t *core = cpu_create_core();
-    core->pc = binary_offset;
+    core->pc = entry_point;
     cpu_exec_core(core);
 }
