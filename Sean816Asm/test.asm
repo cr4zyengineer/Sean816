@@ -20,10 +20,10 @@ bufferbloop:
 	RET
 
 bufferc:
-	LMEM  %A   0x0500			; Get the current MM position
-	MOV   %MO  %A				; Setting memory offset
+	LMEM  %MO   0x0500			; Get the current MM position
 	STORE %B   0x0501			; Storing the character at buffer position
-	INC   %A					; Incrementing the MM position
+	INC   %MO					; Incrementing the MM position
+	MOV   %A   %MO				; Moving MM register to the A register
 	LIMM  %MO  0x00				; Setting memory offset to 0 to write correctly
 	STORE %A   0x0500			; Storing MM position to the saver
 	RET
