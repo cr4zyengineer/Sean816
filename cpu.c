@@ -32,6 +32,11 @@ void cpu_pop(cpu_core_t *core);
 void cpu_call(cpu_core_t *core);
 void cpu_ret(cpu_core_t *core);
 
+void cpu_and(cpu_core_t *core);
+void cpu_or(cpu_core_t *core);
+void cpu_xor(cpu_core_t *core);
+void cpu_not(cpu_core_t *core);
+
 /*
  * Opcode table
  */
@@ -62,6 +67,11 @@ instruction_t opcode_table[UINT8_MAX] = {
     cpu_pop,
     cpu_call,
     cpu_ret,
+
+    cpu_and,
+    cpu_or,
+    cpu_xor,
+    cpu_not
 };
 
 /*
@@ -130,7 +140,7 @@ void cpu_exec_core(cpu_core_t *core)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
 
-        if(instruction_id == OP_HLT || instruction_id > 0x15) return;
+        if(instruction_id == OP_HLT || instruction_id > 0x19) return;
 
         instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes
         if(instruction)

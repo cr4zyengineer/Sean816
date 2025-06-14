@@ -263,6 +263,18 @@ int main(int argc, char *argv[]) {
         } else if (strcmp("ret", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 0, 0);
             binary[roffset++] = OP_RET;
+        } else if (strcmp("and", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
+            binary[roffset++] = OP_AND;
+        } else if (strcmp("or", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
+            binary[roffset++] = OP_OR;
+        } else if (strcmp("xor", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
+            binary[roffset++] = OP_XOR;
+        } else if (strcmp("not", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 1, 1);
+            binary[roffset++] = OP_NOT;
         } else {
             printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
             return 1;

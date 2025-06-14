@@ -102,7 +102,13 @@ enum cpu_opcodes {
     OP_PUSH = 0x12,
     OP_POP = 0x13,
     OP_CALL = 0x14,
-    OP_RET = 0x15
+    OP_RET = 0x15,
+
+    // BIT Manipulation
+    OP_AND = 0x16,
+    OP_OR = 0x17,
+    OP_XOR = 0x18,
+    OP_NOT = 0x19
 };
 
 typedef void (*instruction_t)(cpu_core_t*);
