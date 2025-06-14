@@ -17,25 +17,25 @@ static void cpu_math_arg_get(cpu_core_t *core)
 void cpu_add(cpu_core_t *core)
 {
     cpu_math_arg_get(core);
-    core->a = *core->reg[core->ta] + *core->reg[core->tb];
+    *core->reg[core->ta] = *core->reg[core->ta] + *core->reg[core->tb];
 }
 
 void cpu_sub(cpu_core_t *core)
 {
     cpu_math_arg_get(core);
-    core->a = *core->reg[core->ta] - *core->reg[core->tb];
+    *core->reg[core->ta] = *core->reg[core->ta] - *core->reg[core->tb];
 }
 
 void cpu_mul(cpu_core_t *core)
 {
     cpu_math_arg_get(core);
-    core->a = *core->reg[core->ta] * *core->reg[core->tb];
+    *core->reg[core->ta] = *core->reg[core->ta] * *core->reg[core->tb];
 }
 
 void cpu_div(cpu_core_t *core)
 {
     cpu_math_arg_get(core);
-    core->a = *core->reg[core->ta] / *core->reg[core->tb];
+    *core->reg[core->ta] = *core->reg[core->ta] / *core->reg[core->tb];
 }
 
 void cpu_inc(cpu_core_t *core)
