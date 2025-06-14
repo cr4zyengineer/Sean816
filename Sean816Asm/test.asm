@@ -1,8 +1,7 @@
 main:
 	limm  a    0x00
 	limm  b    0xFF
-mainintloop:
-	call  *clearscreen
+mainintloop: ; call  *clearscreen
 	call  *printint
 	inc   a
 	cmp   a    b
@@ -114,3 +113,6 @@ clearscreen:
 	slh  b
 	slh  f
 	ret
+
+dontcallyet:
+	mlmh  "fuck!"

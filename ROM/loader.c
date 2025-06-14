@@ -7,67 +7,58 @@
 #include "../memory.h"
 #include "../cpu.h"
 
-extern uint8_t mem[UINT16_MAX];
+extern uint8_t mem[MEMORY_SIZE];
 uint16_t offset = MEMORY_MAPPED_IO_REGION_SIZE;
 
 void endianswapper(uint16_t *src, uint16_t *dest)
 {
-    uint8_t *relbuf = (uint8_t*)src;
-    uint8_t *endianswap = (uint8_t*)dest;
-    endianswap[0] = relbuf[1];
-    endianswap[1] = relbuf[0];
+    ((uint8_t*)dest)[0] = ((uint8_t*)src)[1];
+    ((uint8_t*)dest)[1] = ((uint8_t*)src)[0];
 }
 
 void binload(const char *path)
 {
-    // Open file
+    // Open the binary and copy it to memory
     int fd = open(path, O_RDONLY);
     if(fd == -1)
     {
         printf("Error: Couldnt open binary at %s\n", path);
         return;
     }
-
-    // Read its content slowly
     struct stat fileStat;
     fstat(fd, &fileStat);
-
-    // Now we read loop
-    uint8_t *vbuf = &mem[offset];
-    ssize_t rbytes = read(fd, vbuf, fileStat.st_size);
-
-    // Close file
+    if(fileStat.st_size + offset > MEMORY_SIZE)
+    {
+        printf("Error: Not enough memory available to load binary at %p\n", path);
+        return;
+    }
+    ssize_t rbytes = read(fd, &mem[offset], fileStat.st_size);
     close(fd);
 
-    // Get the header
+    // Get the header and patch it in memory
     sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&mem[offset];
-
-    // Check its magic
-    if(header->magic != SEAN816_HEADER_MAGIC)
+    if(header->magic != SEAN816_HEADER_MAGIC) {
+        printf("Error: Binary at path %s is not a valid Sean816 binary\n", path);
         return;
+    }
+    header->code_offset += offset;
+    header->entry_offset += offset;
+    offset += rbytes;
 
     // Relocate the offsets
-    uint16_t *rloc_offsets = (uint16_t*)&mem[offset  + sizeof(sean816_rom_executable_header_t)];
-    uint16_t binary_offset = ((sizeof(sean816_rom_executable_header_t)) + (sizeof(uint16_t) * header->reloc_count)) + offset;
-    vbuf = &mem[binary_offset];
+    uint16_t *rloc_offsets = (uint16_t*)((uintptr_t)header + sizeof(sean816_rom_executable_header_t));
     for(uint16_t rloc = 0; rloc < header->reloc_count; rloc++)
     {
-        uint16_t relocation_offset = rloc_offsets[rloc];
-        uint16_t *relative_offset = (uint16_t*)(vbuf + relocation_offset);
+        uint16_t *relative_offset = (uint16_t*)(mem + header->code_offset + rloc_offsets[rloc]);
 
         // As the Sean816 CPU has a completely different endian we need to cross both over and then again
         uint16_t roffset = 0;
         endianswapper(relative_offset, &roffset);
-        roffset += binary_offset;
+        roffset += header->code_offset;
         endianswapper(&roffset, relative_offset);
     }
 
-    uint16_t entry_point = binary_offset + header->entry;
-
-    // Now were good to go?
-    offset += rbytes;
-
     cpu_core_t *core = cpu_create_core();
-    core->pc = entry_point;
+    core->pc = header->entry_offset;
     cpu_exec_core(core);
 }

@@ -133,6 +133,7 @@ cpu_core_t* cpu_create_core(void)
 /*
  * Executes a cpu core;
  */
+#include <unistd.h>
 void cpu_exec_core(cpu_core_t *core)
 {
     // Lets go...
@@ -141,6 +142,9 @@ void cpu_exec_core(cpu_core_t *core)
     while(1)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
+
+        //printf("core->pc = %p : %d\n", (void*)(uintptr_t)core->pc - MEMORY_MAPPED_IO_REGION_SIZE, instruction_id);
+        //sleep(1);
 
         if(instruction_id == OP_HLT || instruction_id > 0x1A) return;
 

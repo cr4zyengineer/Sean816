@@ -23,12 +23,16 @@ typedef struct {
 
 static char *(*raw)[MAX_WORDS];
 static int raw_i = 0;
+static uint8_t data[UINT16_MAX];
 static uint8_t binary[UINT16_MAX];
 static LABEL symbols[UINT16_MAX];
 static uint16_t sym_count = 0;
+static uint16_t doffset = 0;
 static uint16_t roffset = 0;
 static uint16_t reloc_count = 0;
 static uint16_t reloc_offsets[UINT16_MAX];
+static uint16_t data_count = 0;
+static uint16_t data_reloc_offsets[UINT16_MAX];
 
 bool is_number(const char *str) {
     if (str == NULL || *str == '\0') return false;
@@ -109,7 +113,7 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
 
     while (raw_i_n < 6 && s[raw_i_n] != NULL && s[raw_i_n][0] != ';')
     {
-        if (is_hex16_format(s[raw_i_n]) || s[raw_i_n][0] == '*')
+        if (is_hex16_format(s[raw_i_n]) || s[raw_i_n][0] == '*' || s[raw_i_n][0] == '"')
             param += 2;
         else
             param++;
@@ -122,6 +126,16 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
         printf("Error:%d: Expected %d to %d parameters, but got %d\n", raw_i + 1, minP, maxP, param);
         exit(1);
     }
+}
+
+uint16_t addData(const char *str)
+{
+    uint16_t offset = doffset;
+    data_reloc_offsets[data_count++] = roffset;
+    for(size_t i = 1; str[i] != '"'; i++)
+        data[doffset++] = str[i];
+    data[doffset++] = '\0';
+    return offset;
 }
 
 
@@ -160,8 +174,6 @@ int main(int argc, char *argv[]) {
                 if(raw[i][0] != NULL)
                     if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
                         roffset++;
-
-
 
             } else if(islabel(raw[i][j])) {
                 roffset++;
@@ -350,6 +362,10 @@ int main(int argc, char *argv[]) {
                 binary[roffset++] = 0x1B;
             } else if(strcmp(input, "sph") == 0) {
                 binary[roffset++] = 0x1C;
+            } else if(input[0] == '"') {
+                uint16_t offset = addData(input);
+                binary[roffset++] = ((uint8_t*)&offset)[0];
+                binary[roffset++] = ((uint8_t*)&offset)[1];
             } else if(input[0] == '*') {
                 insertSymbolAddress(input);
                 input++;
@@ -392,13 +408,11 @@ int main(int argc, char *argv[]) {
     uint16_t old_offset = 0;
     uint8_t final_binary[UINT16_MAX];
 
-    sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&final_binary[0x00];
-    header->magic = SEAN816_HEADER_MAGIC;
-
     bool label_found = false;
+    uint16_t symbol = 0x00;
     for (int h = 0; h < sym_count; h++) {
         if (symbols[h].had_colon && strcmp("main", symbols[h].modified_str) == 0) {
-            header->entry = symbols[h].offset;
+            symbol = symbols[h].offset;
             label_found = true;
             break;
         }
@@ -410,16 +424,28 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    header->reloc_count = reloc_count;
-
     // NOTE: Here we prepare buffers before the copy over
     uint8_t *reloc_buffer = (uint8_t*)&reloc_offsets;
+    uint8_t *data_buffer = data;
 
+    // NOTE: Copy reloc offset table
     for(old_offset = final_offset; final_offset < ((sizeof(uint16_t) * reloc_count) + old_offset); final_offset++)
         final_binary[final_offset] = reloc_buffer[final_offset - old_offset];
 
+    // NOTE: Copy data section
+    for(old_offset = final_offset; final_offset < doffset + old_offset; final_offset++)
+        final_binary[final_offset] = data_buffer[final_offset - old_offset];
+
+    printf("[*] data section is %d bytes long\n", final_offset - old_offset);
+
     uint16_t binary_start_offset = final_offset;
     memcpy((void*)(final_binary + binary_start_offset), binary, roffset);
+
+    sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&final_binary[0x00];
+    header->magic = SEAN816_HEADER_MAGIC;
+    header->code_offset = binary_start_offset;
+    header->entry_offset = binary_start_offset + symbol;
+    header->reloc_count = reloc_count;
 
     storeasm816(argv[2], final_binary, final_offset + roffset);
     free_content(raw);

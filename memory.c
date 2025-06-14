@@ -77,26 +77,3 @@ void memory_write(uint16_t addr,
     else
         mem[addr] = value;
 }
-
-void memory_buffer_intl_exec(uint8_t buffer[UINT16_MAX - MEMORY_MAPPED_IO_REGION_SIZE])
-{
-    for(size_t i = 0; i < (UINT16_MAX - MEMORY_MAPPED_IO_REGION_SIZE); i++)
-        mem[MEMORY_MAPPED_IO_REGION_SIZE + i] = buffer[i];
-}
-
-void memory_load_binary(const char *filePath)
-{
-    // Open file
-    int fd = open(filePath, O_RDONLY);
-
-    // Read its content slowly
-    struct stat fileStat;
-    fstat(fd, &fileStat);
-
-    // Now we read loop
-    uint8_t *vbuf = &mem[MEMORY_MAPPED_IO_REGION_SIZE];
-    read(fd, vbuf, fileStat.st_size);
-
-    // Close file
-    close(fd);
-}
