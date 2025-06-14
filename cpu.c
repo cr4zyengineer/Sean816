@@ -9,6 +9,7 @@
  */
 void cpu_load(cpu_core_t *core);
 void cpu_store(cpu_core_t *core);
+void cpu_mlmh(cpu_core_t *core);
 void cpu_loadlh(cpu_core_t *core);
 void cpu_storelh(cpu_core_t *core);
 void cpu_mov(cpu_core_t *core);
@@ -45,6 +46,7 @@ instruction_t opcode_table[UINT8_MAX] = {
 
     cpu_load,
     cpu_store,
+    cpu_mlmh,
     cpu_loadlh,
     cpu_storelh,
     cpu_mov,
@@ -140,7 +142,7 @@ void cpu_exec_core(cpu_core_t *core)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
 
-        if(instruction_id == OP_HLT || instruction_id > 0x19) return;
+        if(instruction_id == OP_HLT || instruction_id > 0x1A) return;
 
         instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes
         if(instruction)

@@ -200,6 +200,9 @@ int main(int argc, char *argv[]) {
         } else if (strcmp("store", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 3, 3);
             binary[roffset++] = OP_STORE;
+        } else if (strcmp("mlmh", raw[raw_i][0]) == 0) {
+            enoughParam(raw[raw_i], 2, 2);
+            binary[roffset++] = OP_MLMH;
         } else if (strcmp("loadlh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;

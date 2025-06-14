@@ -78,37 +78,38 @@ enum cpu_opcodes {
     // Data
     OP_LOAD = 0x01,
     OP_STORE = 0x02,
-    OP_LOADLH = 0x03,
-    OP_STORELH = 0x04,
-    OP_MOV = 0x05,
+    OP_MLMH = 0x03,
+    OP_LOADLH = 0x04,
+    OP_STORELH = 0x05,
+    OP_MOV = 0x06,
 
     // Arithmetic
-    OP_ADD = 0x06,
-    OP_SUB = 0x07,
-    OP_MUL = 0x08,
-    OP_DIV = 0x09,
-    OP_INC = 0x0A,
-    OP_DEC = 0x0B,
+    OP_ADD = 0x07,
+    OP_SUB = 0x08,
+    OP_MUL = 0x09,
+    OP_DIV = 0x0A,
+    OP_INC = 0x0B,
+    OP_DEC = 0x0C,
 
     // Flow control
-    OP_JMP = 0x0C,
-    OP_CMP = 0x0D,
-    OP_JE = 0x0E,
-    OP_JNE = 0x0F,
-    OP_JG = 0x10,
-    OP_JL = 0x11,
+    OP_JMP = 0x0D,
+    OP_CMP = 0x0E,
+    OP_JE = 0x0F,
+    OP_JNE = 0x10,
+    OP_JG = 0x11,
+    OP_JL = 0x12,
 
     // Stack
-    OP_PUSH = 0x12,
-    OP_POP = 0x13,
-    OP_CALL = 0x14,
-    OP_RET = 0x15,
+    OP_PUSH = 0x13,
+    OP_POP = 0x14,
+    OP_CALL = 0x15,
+    OP_RET = 0x16,
 
     // BIT Manipulation
-    OP_AND = 0x16,
-    OP_OR = 0x17,
-    OP_XOR = 0x18,
-    OP_NOT = 0x19
+    OP_AND = 0x17,
+    OP_OR = 0x18,
+    OP_XOR = 0x19,
+    OP_NOT = 0x1A
 };
 
 typedef void (*instruction_t)(cpu_core_t*);

@@ -1,8 +1,8 @@
 main:
-	call  *clearscreen
 	limm  a    0x00
 	limm  b    0xFF
 mainintloop:
+	call  *clearscreen
 	call  *printint
 	inc   a
 	cmp   a    b
@@ -58,20 +58,14 @@ printintloop:
 	inc  b
 	jmp *printintloop
 printend:
-	mov c a
-	mov a d
-	call *putint
-	mov a b
-	call *putint
-	mov a c
-	call *putint
-	limm  a 0x0A
-	store a 0x00C0
-	ret
-putint:
-	limm  b 0x30
-	add   b a
-	store b 0x00C0
+	mlmh  0x00C0
+	limm  c 0x30
+	add   d c
+	slh   d
+	add   b c
+	slh   b
+	add   a c
+	slh   a
 	ret
 
 ;
@@ -101,8 +95,7 @@ fgetsloop:
 ; NOTE: Clears out the entire serial, its a bit messy tho, will resolve when i add data section with string pointers
 ;
 clearscreen:
-	limm ml 0x00
-	limm mh 0xC0
+	mlmh 0x00C0
 	limm a  0x1B
 	limm b  0x5B
 	limm c  0x33

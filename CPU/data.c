@@ -35,6 +35,15 @@ void cpu_store(cpu_core_t *core)
     memory_write(((core->tb << 8) | core->tc) + core->mo, *core->reg[core->ta]);
 }
 
+void cpu_mlmh(cpu_core_t *core)
+{
+    memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
+    memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
+
+    core->ml = core->ta;
+    core->mh = core->tb;
+}
+
 void cpu_loadlh(cpu_core_t *core)
 {
     memory_read(core->pc++, &core->tb);     // Reading the target register
