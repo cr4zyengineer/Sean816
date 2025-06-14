@@ -1,4 +1,5 @@
 main:
+	call  *clearscreen
 	limm  a    0x00
 	limm  b    0xFF
 mainintloop:
@@ -91,4 +92,32 @@ fgetsloop:
 	inc   mh					; Increment high bit
 	cmp   c    b				; Check if its a newline character
 	jne   *fgetsloop			; If it is a newline character do not continue loop
+	ret
+
+
+;
+; clearscreen takes no arguments
+;
+; NOTE: Clears out the entire serial, its a bit messy tho, will resolve when i add data section with string pointers
+;
+clearscreen:
+	limm ml 0x00
+	limm mh 0xC0
+	limm a  0x1B
+	limm b  0x5B
+	limm c  0x33
+	limm d  0x4A
+	limm f  0x48
+	slh  a
+	slh  b
+	slh  c
+	slh  d
+	dec  c
+	slh  a
+	slh  b
+	slh  c
+	slh  d
+	slh  a
+	slh  b
+	slh  f
 	ret
