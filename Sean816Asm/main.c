@@ -201,16 +201,10 @@ int main(int argc, char *argv[]) {
         } else if (strcmp("mhml", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
             binary[roffset++] = OP_MHML;
-        } else if (strcmp("loadlh", raw[raw_i][0]) == 0) {
+        } else if (strcmp("loadlh", raw[raw_i][0]) == 0 || strcmp("llh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;
-        } else if (strcmp("storelh", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
-            binary[roffset++] = OP_STORELH;
-        } else if (strcmp("llh", raw[raw_i][0]) == 0) {         // Alternative names to shorten the instruction name
-            enoughParam(raw[raw_i], 1, 1);
-            binary[roffset++] = OP_LOADLH;
-        } else if (strcmp("slh", raw[raw_i][0]) == 0) {
+        } else if (strcmp("storelh", raw[raw_i][0]) == 0 || strcmp("slh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_STORELH;
         } else if (strcmp("mov", raw[raw_i][0]) == 0) {
