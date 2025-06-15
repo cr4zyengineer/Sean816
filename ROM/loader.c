@@ -31,7 +31,7 @@ void binload(const char *path)
 
     // Get the header and patch it in memory
     sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&mem[offset];
-    if(header->magic != SEAN816_HEADER_MAGIC) {
+    if(header->magic16 != SEAN816_HEADER_MAGIC) {
         printf("Error: Binary at path %s is not a valid Sean816 binary\n", path);
         return;
     }

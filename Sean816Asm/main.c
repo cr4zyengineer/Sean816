@@ -416,7 +416,7 @@ int main(int argc, char *argv[]) {
     memcpy((void*)(final_binary + binary_start_offset), binary, roffset);
 
     sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&final_binary[0x00];
-    header->magic = SEAN816_HEADER_MAGIC;
+    header->magic16 = SEAN816_HEADER_MAGIC;
     header->code_offset = binary_start_offset;
     header->entry_offset = binary_start_offset + symbol;
     header->reloc_count = reloc_count;
