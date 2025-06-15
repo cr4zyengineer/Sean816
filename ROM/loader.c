@@ -10,12 +10,6 @@
 extern uint8_t mem[MEMORY_SIZE];
 uint16_t offset = MEMORY_MAPPED_IO_REGION_SIZE;
 
-void endianswapper(uint16_t *src, uint16_t *dest)
-{
-    ((uint8_t*)dest)[0] = ((uint8_t*)src)[1];
-    ((uint8_t*)dest)[1] = ((uint8_t*)src)[0];
-}
-
 void binload(const char *path)
 {
     // Open the binary and copy it to memory
@@ -48,15 +42,7 @@ void binload(const char *path)
     // Relocate the offsets
     uint16_t *rloc_offsets = (uint16_t*)((uintptr_t)header + sizeof(sean816_rom_executable_header_t));
     for(uint16_t rloc = 0; rloc < header->reloc_count; rloc++)
-    {
-        uint16_t *relative_offset = (uint16_t*)(mem + header->code_offset + rloc_offsets[rloc]);
-
-        // As the Sean816 CPU has a completely different endian we need to cross both over and then again
-        //uint16_t roffset = 0;
-        //endianswapper(relative_offset, &roffset);
-        *relative_offset += header->code_offset;
-        //endianswapper(&roffset, relative_offset);
-    }
+        *(uint16_t*)(mem + header->code_offset + rloc_offsets[rloc]) += header->code_offset;
 
     cpu_core_t *core = cpu_create_core();
     core->pc = header->entry_offset;
