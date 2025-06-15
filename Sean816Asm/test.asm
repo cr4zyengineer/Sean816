@@ -74,7 +74,6 @@ fgetsloop:
 	jne   *fgetsloop			; If it is a newline character do not continue loop
 fgetsend:
 	limm  b    0x00
-	inc   ml
 	slh   b
 	ret
 
