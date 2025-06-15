@@ -133,7 +133,6 @@ cpu_core_t* cpu_create_core(void)
 /*
  * Executes a cpu core;
  */
-#include <unistd.h>
 void cpu_exec_core(cpu_core_t *core)
 {
     // Lets go...

@@ -4,6 +4,7 @@
  */
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <dlfcn.h>
 #include "memory.h"
 
@@ -25,9 +26,14 @@ void device_load_device(const char *path)
     // Load em!
     if(device_offset)
     {
-        uint16_t *addr = device_offset();
         void (*device_read)(uint8_t *value) = dlsym(handle, "device_read");
         void (*device_write)(uint8_t value) = dlsym(handle, "device_write");
+        if(!device_read || !device_write)
+        {
+            printf("Error: Device %s is not valid!", path);
+            exit(1);
+        }
+        uint16_t *addr = device_offset();
         for(size_t i = 0; addr[i] != 0x0000; i++)
             memory_io_set(addr[i], device_read, device_write);
     }

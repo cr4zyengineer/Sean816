@@ -34,7 +34,6 @@ static uint16_t reloc_offsets[UINT16_MAX];
 
 bool is_number(const char *str) {
     if (str == NULL || *str == '\0') return false;
-    if (*str == '-' || *str == '+') str++;
     if (*str == '\0') return false;
 
     while (*str) {
