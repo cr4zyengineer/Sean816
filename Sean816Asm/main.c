@@ -212,9 +212,9 @@ int main(int argc, char *argv[]) {
         } else if (strcmp("store", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 3, 3);
             binary[roffset++] = OP_STORE;
-        } else if (strcmp("mlmh", raw[raw_i][0]) == 0) {
+        } else if (strcmp("mhml", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 2, 2);
-            binary[roffset++] = OP_MLMH;
+            binary[roffset++] = OP_MHML;
         } else if (strcmp("loadlh", raw[raw_i][0]) == 0) {
             enoughParam(raw[raw_i], 1, 1);
             binary[roffset++] = OP_LOADLH;
@@ -371,14 +371,14 @@ int main(int argc, char *argv[]) {
                 input++;
                 uint16_t value = (uint16_t)atoi(input);
                 uint8_t *array = (uint8_t *)&value;
-                binary[roffset++] = array[1];
                 binary[roffset++] = array[0];
+                binary[roffset++] = array[1];
             } else if (input[0] == 'H') {
                 input++; // Skip 'H'
                 uint16_t value = (uint16_t)atoi(input);
                 uint8_t *array = (uint8_t *)&value;
-                binary[roffset++] = array[1];
                 binary[roffset++] = array[0];
+                binary[roffset++] = array[1];
             } else if (strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
                 size_t hex_digit_count = strlen(input + 2); // how many digits after 0x
                 unsigned long value = strtoul(input, NULL, 16); // convert hex string
@@ -388,8 +388,8 @@ int main(int argc, char *argv[]) {
                     binary[roffset++] = (uint8_t)value;
                 } else if (hex_digit_count <= 4) {
                     // Treat as 16-bit
-                    binary[roffset++] = (uint8_t)(value >> 8);     // High byte
                     binary[roffset++] = (uint8_t)(value & 0xFF);   // Low byte
+                    binary[roffset++] = (uint8_t)(value >> 8);     // High byte
                 } else {
                     fprintf(stderr, "Invalid hex format (too large): %s\n", input);
                 }

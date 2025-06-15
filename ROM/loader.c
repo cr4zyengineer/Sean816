@@ -52,10 +52,10 @@ void binload(const char *path)
         uint16_t *relative_offset = (uint16_t*)(mem + header->code_offset + rloc_offsets[rloc]);
 
         // As the Sean816 CPU has a completely different endian we need to cross both over and then again
-        uint16_t roffset = 0;
-        endianswapper(relative_offset, &roffset);
-        roffset += header->code_offset;
-        endianswapper(&roffset, relative_offset);
+        //uint16_t roffset = 0;
+        //endianswapper(relative_offset, &roffset);
+        *relative_offset += header->code_offset;
+        //endianswapper(&roffset, relative_offset);
     }
 
     cpu_core_t *core = cpu_create_core();

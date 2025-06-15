@@ -9,7 +9,7 @@
  */
 void cpu_load(cpu_core_t *core);
 void cpu_store(cpu_core_t *core);
-void cpu_mlmh(cpu_core_t *core);
+void cpu_mhml(cpu_core_t *core);
 void cpu_loadlh(cpu_core_t *core);
 void cpu_storelh(cpu_core_t *core);
 void cpu_mov(cpu_core_t *core);
@@ -46,7 +46,7 @@ instruction_t opcode_table[UINT8_MAX] = {
 
     cpu_load,
     cpu_store,
-    cpu_mlmh,
+    cpu_mhml,
     cpu_loadlh,
     cpu_storelh,
     cpu_mov,
@@ -143,8 +143,8 @@ void cpu_exec_core(cpu_core_t *core)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
 
-        //printf("core->pc = %p : %d\n", (void*)(uintptr_t)core->pc - MEMORY_MAPPED_IO_REGION_SIZE, instruction_id);
-        //sleep(1);
+        //printf("core->pc = %p : %p\n", (void*)(uintptr_t)core->pc - MEMORY_MAPPED_IO_REGION_SIZE, (void*)(uintptr_t)instruction_id);
+        //usleep(50000);
 
         if(instruction_id == OP_HLT || instruction_id > 0x1A) return;
 

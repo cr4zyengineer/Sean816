@@ -36,7 +36,7 @@ void cpu_store(cpu_core_t *core)
     memory_write(gather16Bit(core->tb, core->tc) + core->mo, *core->reg[core->ta]);
 }
 
-void cpu_mlmh(cpu_core_t *core)
+void cpu_mhml(cpu_core_t *core)
 {
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
@@ -51,6 +51,7 @@ void cpu_loadlh(cpu_core_t *core)
 
     uint8_t value = 0;
 
+    //printf("[*] Meow: %p\n", (void*)(uintptr_t)gather16Bit(core->ml, core->mh));
     memory_read(gather16Bit(core->ml, core->mh), &value);
 
     *(core->reg[core->tb]) = value;
@@ -59,6 +60,8 @@ void cpu_loadlh(cpu_core_t *core)
 void cpu_storelh(cpu_core_t *core)
 {
     memory_read(core->pc++, &core->ta);     // Reading the target register
+
+    //printf("[*] Meow: %p\n", (void*)(uintptr_t)gather16Bit(core->ml, core->mh));
 
     memory_write(gather16Bit(core->ml, core->mh), *core->reg[core->ta]);
 }

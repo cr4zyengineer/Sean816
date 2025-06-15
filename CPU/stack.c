@@ -26,8 +26,8 @@ static void cpu_prvt_push16(cpu_core_t *core, uint16_t value)
 static void cpu_prvt_pop16(cpu_core_t *core, uint16_t *value)
 {
     uint8_t lo, hi;
-    cpu_prvt_pop(core, &lo); // LSB
     cpu_prvt_pop(core, &hi); // MSB
+    cpu_prvt_pop(core, &lo); // LSB
     *value = gather16Bit(lo, hi);
 }
 
@@ -67,7 +67,7 @@ void cpu_call(cpu_core_t *core)
     // TODO: If needed we need to add arguments to the calls. the issue is how do we indicate intermediate and register selection, shall it only be register selecttions!?
     // NOTE: Not really a Todo, more of an "Add the logic if current logic is sufficient"
 
-    core->pc =  (core->ta << 8) | core->tb;
+    core->pc =  gather16Bit(core->ta, core->tb);
 }
 
 void cpu_ret(cpu_core_t *core)

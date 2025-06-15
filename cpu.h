@@ -78,7 +78,7 @@ enum cpu_opcodes {
     // Data
     OP_LOAD = 0x01,
     OP_STORE = 0x02,
-    OP_MLMH = 0x03,
+    OP_MHML = 0x03,
     OP_LOADLH = 0x04,
     OP_STORELH = 0x05,
     OP_MOV = 0x06,
