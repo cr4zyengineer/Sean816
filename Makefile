@@ -1,4 +1,4 @@
-# Makefile - Sean816
+# Makefile - Sean816 Test
 
 all: Sean816AsmS Sean816EmuS Sean816EmuRunS
 run: Sean816AsmS Sean816EmuRunS
