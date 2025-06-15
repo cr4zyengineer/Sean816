@@ -1,17 +1,41 @@
 main:
 	limm  a    0x00
 	limm  b    0xFF
+
+	limm  c    0x00				; Counter
+	limm  d    0x0A				; Counter limit
+mainpreintloop:
+	cmp   c    d
+	jne   *mainpreintsp
+	jl    *mainpreintnl
+mainpreintnl:
+	call  *helper_printnl
+	limm  c 0x00
+	jmp   *mainintloop
+mainpreintsp:
+	call  *helper_printsp
+	inc   c
 mainintloop:
 	call  *printint
 	inc   a
 	cmp   a    b
-	jne   *mainintloop
+	jne   *mainpreintloop
 mainreadline:
+	call  *helper_printnl
 	limm  a    0x02				; Specifying 0x0200 as memory address
 	limm  b    0x00
 	call  *fgets				; Getting userinput
 	call  *printf				; Printing it back out
 	halt
+
+helper_printnl:
+	limm  a 0x0A
+	store a 0x00C0
+	ret
+helper_printsp:
+	limm  a 0x20
+	store a 0x00C0
+	ret
 
 ;
 ; printf
