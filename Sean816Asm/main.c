@@ -10,7 +10,8 @@
 #include <errno.h>
 #include <limits.h>
 #include <ctype.h>
-#include "libasmfile.h"
+#include <unistd.h>
+#include <fcntl.h>
 #include "code.h"
 #include "../cpu.h"
 #include "../ROM/header.h"
@@ -130,11 +131,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    printf("[*] Sean816 Assembler\n");
-
     raw = read_file(argv[1]);
 
-    printf("[*] Getting label addresses\n");
     for (int i = 0; i < MAX_LINES; i++) {
 
         // Patch for the helper instructions that take up more space
@@ -169,7 +167,6 @@ int main(int argc, char *argv[]) {
     }
 
     roffset = 0;
-    printf("[*] Compile\n");
     for (raw_i = 0; raw_i < MAX_LINES; raw_i++) {
         if (raw[raw_i] == NULL || raw[raw_i][0] == NULL || raw[raw_i][0][0] == ';') {
             continue;
@@ -384,6 +381,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // Freeing raw content
+    free_content(raw);
+
     // Generating final binary
     uint16_t final_offset = sizeof(sean816_rom_executable_header_t);
     uint16_t old_offset = 0;
@@ -421,12 +421,14 @@ int main(int argc, char *argv[]) {
     header->entry_offset = binary_start_offset + symbol;
     header->reloc_count = reloc_count;
 
-    storeasm816(argv[2], final_binary, final_offset + roffset);
-    free_content(raw);
-
-    printf("[*] Binary size: %db\n", final_offset + roffset);
-
-    printf("[*] Done :3\n");
+    // NOTE: Here we just write out what we have to write out??
+    int fd = open(argv[2], O_WRONLY | O_TRUNC | O_CREAT, 0755);
+    if(fd == -1)
+    {
+        printf("Error: Failed to open binary file\n");
+        return 1;
+    }
+    write(fd, final_binary, final_offset + roffset);
 
     return 0;
 }
