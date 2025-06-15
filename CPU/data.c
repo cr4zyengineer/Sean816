@@ -4,6 +4,7 @@
  */
 #include "../memory.h"
 #include "../cpu.h"
+#include "endian.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -18,7 +19,7 @@ void cpu_load(cpu_core_t *core)
     if(core->ta != 0x00)
     {
         memory_read(core->pc++, &core->td); // Second value needed for 16bit
-        memory_read(((core->tc << 8) | core->td) + core->mo, &value);
+        memory_read(gather16Bit(core->tc, core->td) + core->mo, &value);
     } else {
         value = core->tc;
     }
@@ -32,7 +33,7 @@ void cpu_store(cpu_core_t *core)
     memory_read(core->pc++, &core->tb);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tc);     // Reading second 8bits of address
 
-    memory_write(((core->tb << 8) | core->tc) + core->mo, *core->reg[core->ta]);
+    memory_write(gather16Bit(core->tb, core->tc) + core->mo, *core->reg[core->ta]);
 }
 
 void cpu_mlmh(cpu_core_t *core)
@@ -50,7 +51,7 @@ void cpu_loadlh(cpu_core_t *core)
 
     uint8_t value = 0;
 
-    memory_read(((core->ml << 8) | core->mh), &value);
+    memory_read(gather16Bit(core->ml, core->mh), &value);
 
     *(core->reg[core->tb]) = value;
 }
@@ -59,7 +60,7 @@ void cpu_storelh(cpu_core_t *core)
 {
     memory_read(core->pc++, &core->ta);     // Reading the target register
 
-    memory_write(((core->ml << 8) | core->mh), *core->reg[core->ta]);
+    memory_write(gather16Bit(core->ml, core->mh), *core->reg[core->ta]);
 }
 
 void cpu_mov(cpu_core_t *core)

@@ -4,6 +4,7 @@
  */
 #include "../cpu.h"
 #include "../memory.h"
+#include "endian.h"
 #include <stdio.h>
 
 static void cpu_prvt_push(cpu_core_t *core, uint8_t value)
@@ -27,7 +28,7 @@ static void cpu_prvt_pop16(cpu_core_t *core, uint16_t *value)
     uint8_t lo, hi;
     cpu_prvt_pop(core, &lo); // LSB
     cpu_prvt_pop(core, &hi); // MSB
-    *value = ((uint16_t)lo << 8) | hi;
+    *value = gather16Bit(lo, hi);
 }
 
 void cpu_push(cpu_core_t *core)

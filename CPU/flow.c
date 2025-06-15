@@ -4,6 +4,7 @@
  */
 #include "../memory.h"
 #include "../cpu.h"
+#include "endian.h"
 #include <stdio.h>
 
 void cpu_jmp(cpu_core_t *core)
@@ -11,7 +12,7 @@ void cpu_jmp(cpu_core_t *core)
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
 
-    core->pc =  (core->ta << 8) | core->tb;
+    core->pc = gather16Bit(core->ta, core->tb);
 }
 
 void cpu_cmp(cpu_core_t *core)
@@ -38,7 +39,7 @@ void cpu_je(cpu_core_t *core)
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
 
-    core->pc = (core->ta << 8) | core->tb;
+    core->pc = gather16Bit(core->ta, core->tb);
 }
 
 void cpu_jne(cpu_core_t *core)
@@ -52,7 +53,7 @@ void cpu_jne(cpu_core_t *core)
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
 
-    core->pc = (core->ta << 8) | core->tb;
+    core->pc = gather16Bit(core->ta, core->tb);
 }
 
 void cpu_jg(cpu_core_t *core)
@@ -66,7 +67,7 @@ void cpu_jg(cpu_core_t *core)
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
 
-    core->pc = (core->ta << 8) | core->tb;
+    core->pc = gather16Bit(core->ta, core->tb);
 }
 
 void cpu_jl(cpu_core_t *core)
@@ -80,5 +81,5 @@ void cpu_jl(cpu_core_t *core)
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
 
-    core->pc = (core->ta << 8) | core->tb;
+    core->pc = gather16Bit(core->ta, core->tb);
 }
