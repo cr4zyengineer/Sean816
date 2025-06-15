@@ -22,7 +22,8 @@ typedef struct {
     uint16_t offset;
 } LABEL;
 
-static char *(*raw)[MAX_WORDS];
+extern char *raw[MAX_LINES][MAX_WORDS];
+extern int line_number;
 static int raw_i = 0;
 static uint8_t binary[UINT16_MAX];
 static LABEL symbols[UINT16_MAX];
@@ -131,10 +132,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    raw = read_file(argv[1]);
+    read_file(argv[1]);
 
-    for (int i = 0; i < MAX_LINES; i++) {
-
+    for (int i = 0; i < line_number; i++) {
         // Patch for the helper instructions that take up more space
         if(raw[i][0] != NULL)
             if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
     }
 
     roffset = 0;
-    for (raw_i = 0; raw_i < MAX_LINES; raw_i++) {
+    for (raw_i = 0; raw_i < line_number; raw_i++) {
         if (raw[raw_i] == NULL || raw[raw_i][0] == NULL || raw[raw_i][0][0] == ';') {
             continue;
         }
@@ -175,6 +175,7 @@ int main(int argc, char *argv[]) {
         LABEL checklabel = labelcheck(raw[raw_i][0]);
         if(checklabel.had_colon) {
             raw_i++;
+            if(raw[raw_i][0] == NULL) continue;
         }
 
         if (strcmp("halt", raw[raw_i][0]) == 0) {
@@ -277,8 +278,8 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        for (int j = 0; j < 5; j++) {
-            if (raw[raw_i][j + 1] == NULL)
+        for (int j = 0; j < MAX_WORDS; j++) {
+            if (raw[raw_i][j] == NULL)
                 break;
 
             char *input = raw[raw_i][j + 1];
@@ -382,7 +383,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Freeing raw content
-    free_content(raw);
+    free_content();
 
     // Generating final binary
     uint16_t final_offset = sizeof(sean816_rom_executable_header_t);

@@ -93,7 +93,7 @@ printintloopbig:
 	jl   *printintloop
 	sub  a e
 	inc  d
-	jmp *printintloopbig
+	jmp  *printintloopbig
 printintloop:
 	cmp  a c
 	jl   *printend
