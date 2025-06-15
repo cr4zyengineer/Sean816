@@ -51,10 +51,12 @@ void cpu_call(cpu_core_t *core)
     memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
     memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
 
-    cpu_prvt_push16(core, core->bp);     // save old base pointer
-    cpu_prvt_push16(core, core->pc);     // save return address
+    cpu_prvt_push16(core, core->bp);        // save old base pointer
+    cpu_prvt_push16(core, core->pc);        // save return address
+    cpu_prvt_push(core, core->mh);
+    cpu_prvt_push(core, core->ml);
     cpu_prvt_push(core, core->mo);
-    cpu_prvt_push(core, core->a);        // save registers
+    cpu_prvt_push(core, core->a);           // save registers
     cpu_prvt_push(core, core->b);
     cpu_prvt_push(core, core->c);
     cpu_prvt_push(core, core->d);
@@ -62,7 +64,7 @@ void cpu_call(cpu_core_t *core)
     cpu_prvt_push(core, core->f);
     cpu_prvt_push(core, core->g);
     cpu_prvt_push(core, core->h);
-    core->bp = core->sp;                 // new stack frame base
+    core->bp = core->sp;                    // new stack frame base
 
     // TODO: If needed we need to add arguments to the calls. the issue is how do we indicate intermediate and register selection, shall it only be register selecttions!?
     // NOTE: Not really a Todo, more of an "Add the logic if current logic is sufficient"
@@ -72,7 +74,7 @@ void cpu_call(cpu_core_t *core)
 
 void cpu_ret(cpu_core_t *core)
 {
-    core->ra = core->a;             // Copy over register values to the return register copy
+    core->ra = core->a;                    // Copy over register values to the return register copy
     core->rb = core->b;
     core->rc = core->c;
     core->rd = core->d;
@@ -81,8 +83,8 @@ void cpu_ret(cpu_core_t *core)
     core->rg = core->g;
     core->rh = core->h;
 
-    core->sp = core->bp;            // Moving stack pointer back to back pointer
-    cpu_prvt_pop(core, &core->h);   // Popping stack back for each register
+    core->sp = core->bp;                  // Moving stack pointer back to back pointer
+    cpu_prvt_pop(core, &core->h);         // Popping stack back for each register
     cpu_prvt_pop(core, &core->g);
     cpu_prvt_pop(core, &core->f);
     cpu_prvt_pop(core, &core->e);
@@ -91,6 +93,8 @@ void cpu_ret(cpu_core_t *core)
     cpu_prvt_pop(core, &core->b);
     cpu_prvt_pop(core, &core->a);
     cpu_prvt_pop(core, &core->mo);
+    cpu_prvt_pop(core, &core->ml);
+    cpu_prvt_pop(core, &core->mh);
     cpu_prvt_pop16(core, &core->pc);
     cpu_prvt_pop16(core, &core->bp);
 }

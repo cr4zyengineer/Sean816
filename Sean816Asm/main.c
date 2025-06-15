@@ -175,7 +175,10 @@ int main(int argc, char *argv[]) {
         LABEL checklabel = labelcheck(raw[raw_i][0]);
         if(checklabel.had_colon) {
             raw_i++;
-            if(raw[raw_i][0] == NULL) continue;
+            if(raw[raw_i][0] == NULL) {
+                raw_i++;
+                continue;
+            }
         }
 
         if (strcmp("halt", raw[raw_i][0]) == 0) {
