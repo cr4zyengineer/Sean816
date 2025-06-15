@@ -23,16 +23,12 @@ typedef struct {
 
 static char *(*raw)[MAX_WORDS];
 static int raw_i = 0;
-static uint8_t data[UINT16_MAX];
 static uint8_t binary[UINT16_MAX];
 static LABEL symbols[UINT16_MAX];
 static uint16_t sym_count = 0;
-static uint16_t doffset = 0;
 static uint16_t roffset = 0;
 static uint16_t reloc_count = 0;
 static uint16_t reloc_offsets[UINT16_MAX];
-static uint16_t data_count = 0;
-static uint16_t data_reloc_offsets[UINT16_MAX];
 
 bool is_number(const char *str) {
     if (str == NULL || *str == '\0') return false;
@@ -128,17 +124,6 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
     }
 }
 
-uint16_t addData(const char *str)
-{
-    uint16_t offset = doffset;
-    data_reloc_offsets[data_count++] = roffset;
-    for(size_t i = 1; str[i] != '"'; i++)
-        data[doffset++] = str[i];
-    data[doffset++] = '\0';
-    return offset;
-}
-
-
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         printf("Usage: %s <input file> <output file>\n", argv[0]);
@@ -184,7 +169,7 @@ int main(int argc, char *argv[]) {
     }
 
     roffset = 0;
-    printf("[*] compile\n");
+    printf("[*] Compile\n");
     for (raw_i = 0; raw_i < MAX_LINES; raw_i++) {
         if (raw[raw_i] == NULL || raw[raw_i][0] == NULL || raw[raw_i][0][0] == ';') {
             continue;
@@ -362,10 +347,6 @@ int main(int argc, char *argv[]) {
                 binary[roffset++] = 0x1B;
             } else if(strcmp(input, "sph") == 0) {
                 binary[roffset++] = 0x1C;
-            } else if(input[0] == '"') {
-                uint16_t offset = addData(input);
-                binary[roffset++] = ((uint8_t*)&offset)[0];
-                binary[roffset++] = ((uint8_t*)&offset)[1];
             } else if(input[0] == '*') {
                 insertSymbolAddress(input);
                 input++;
@@ -426,17 +407,10 @@ int main(int argc, char *argv[]) {
 
     // NOTE: Here we prepare buffers before the copy over
     uint8_t *reloc_buffer = (uint8_t*)&reloc_offsets;
-    uint8_t *data_buffer = data;
 
     // NOTE: Copy reloc offset table
     for(old_offset = final_offset; final_offset < ((sizeof(uint16_t) * reloc_count) + old_offset); final_offset++)
         final_binary[final_offset] = reloc_buffer[final_offset - old_offset];
-
-    // NOTE: Copy data section
-    for(old_offset = final_offset; final_offset < doffset + old_offset; final_offset++)
-        final_binary[final_offset] = data_buffer[final_offset - old_offset];
-
-    printf("[*] data section is %d bytes long\n", final_offset - old_offset);
 
     uint16_t binary_start_offset = final_offset;
     memcpy((void*)(final_binary + binary_start_offset), binary, roffset);
@@ -450,9 +424,9 @@ int main(int argc, char *argv[]) {
     storeasm816(argv[2], final_binary, final_offset + roffset);
     free_content(raw);
 
-    printf("[*] binary size: %db\n", final_offset + roffset);
+    printf("[*] Binary size: %db\n", final_offset + roffset);
 
-    printf("[*] done :3\n");
+    printf("[*] Done :3\n");
 
     return 0;
 }

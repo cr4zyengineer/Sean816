@@ -142,10 +142,6 @@ void cpu_exec_core(cpu_core_t *core)
     while(1)
     {
         memory_read(core->pc++, &instruction_id);        // Read the instruction
-
-        //printf("core->pc = %p : %p\n", (void*)(uintptr_t)core->pc - MEMORY_MAPPED_IO_REGION_SIZE, (void*)(uintptr_t)instruction_id);
-        //usleep(50000);
-
         if(instruction_id == OP_HLT || instruction_id > 0x1A) return;
 
         instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes

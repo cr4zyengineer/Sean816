@@ -112,6 +112,3 @@ clearscreen:
 	slh  b
 	slh  f
 	ret
-
-dontcallyet:
-	mhml  "fuck!"
