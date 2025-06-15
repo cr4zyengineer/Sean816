@@ -55,12 +55,8 @@ void memory_read(uint16_t addr,
                  uint8_t *value)
 {
     if(addr >= MEMORY_SIZE)
-    {
         *value = 0x00;
-        return;
-    }
-
-    if(addr < MEMORY_MAPPED_IO_REGION_SIZE)
+    else if(addr < MEMORY_MAPPED_IO_REGION_SIZE)
         memory_io_read(addr, value);
     else
         *value = mem[addr];
@@ -71,8 +67,7 @@ void memory_write(uint16_t addr,
 {
     if(addr >= MEMORY_SIZE)
         return;
-
-    if(addr < MEMORY_MAPPED_IO_REGION_SIZE)
+    else if(addr < MEMORY_MAPPED_IO_REGION_SIZE)
         memory_io_write(addr, value);
     else
         mem[addr] = value;

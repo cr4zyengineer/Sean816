@@ -7,8 +7,6 @@ main:
 mainpreintloop:
 	cmp   c    d
 	jne   *mainpreintsp
-	jl    *mainpreintnl
-mainpreintnl:
 	call  *helper_printnl
 	limm  c 0x00
 	jmp   *mainintloop
@@ -74,6 +72,10 @@ fgetsloop:
 	inc   ml					; Increment high bit
 	cmp   c    b				; Check if its a newline character
 	jne   *fgetsloop			; If it is a newline character do not continue loop
+fgetsend:
+	limm  b    0x00
+	inc   ml
+	slh   b
 	ret
 
 ;

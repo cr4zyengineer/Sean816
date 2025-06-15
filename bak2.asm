@@ -1,4 +1,0 @@
-main:
-	limm  a 0x31
-	store a 0x00C0
-	store a 0x00C0
