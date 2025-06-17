@@ -26,25 +26,9 @@ void memory_io_set(uint16_t addr,
                    void *rfunction,
                    void *wfunction)
 {
-    iomem[addr].type = MIO_SET;
+    iomem[addr].isSet = true;
     iomem[addr].rfunction = rfunction;
     iomem[addr].wfunction = wfunction;
-}
-
-void memory_io_read(uint16_t addr,
-                    uint8_t *value)
-{
-    if(iomem[addr].type != MIO_SET) return;
-    void (*read)(uint16_t addr, uint8_t *value) = iomem[addr].rfunction;
-    read(addr, value);
-}
-
-void memory_io_write(uint16_t addr,
-                     uint8_t value)
-{
-    if(iomem[addr].type != MIO_SET) return;
-    void (*write)(uint16_t addr, uint8_t value) = iomem[addr].wfunction;
-    write(addr, value);
 }
 
 /*
@@ -54,21 +38,19 @@ void memory_io_write(uint16_t addr,
 void memory_read(uint16_t addr,
                  uint8_t *value)
 {
-    if(addr >= MEMORY_SIZE)
-        *value = 0x00;
-    else if(addr < MEMORY_MAPPED_IO_REGION_SIZE)
-        memory_io_read(addr, value);
-    else
+    if(addr < MEMORY_MAPPED_IO_REGION_SIZE && iomem[addr].isSet)
+        iomem[addr].rfunction(addr, value);
+    else if(addr <= MEMORY_SIZE)
         *value = mem[addr];
+    else
+        *value = 0x00;
 }
 
 void memory_write(uint16_t addr,
                   uint8_t value)
 {
-    if(addr >= MEMORY_SIZE)
-        return;
-    else if(addr < MEMORY_MAPPED_IO_REGION_SIZE)
-        memory_io_write(addr, value);
-    else
+    if(addr < MEMORY_MAPPED_IO_REGION_SIZE && iomem[addr].isSet)
+        iomem[addr].wfunction(addr, value);
+    else if(addr <= MEMORY_SIZE)
         mem[addr] = value;
 }

@@ -3,6 +3,7 @@
  *
  */
 #include <stdint.h>
+#include <stdbool.h>
 
 /*
  * Definitions
@@ -11,15 +12,10 @@
 #define MEMORY_SIZE 0x6000
 #define MEMORY_MAPPED_IO_REGION_SIZE 0x00FF
 
-enum MemoryIOMappingType {
-    MIO_NONE = 0x00,
-    MIO_SET = 0x01
-};
-
 typedef struct {
-    uint8_t type;
-    void *rfunction;
-    void *wfunction;
+    bool isSet;
+    void (*rfunction)(uint16_t addr, uint8_t *value);
+    void (*wfunction)(uint16_t addr, uint8_t value);
 } memory_io_mapping_t;
 
 /*
