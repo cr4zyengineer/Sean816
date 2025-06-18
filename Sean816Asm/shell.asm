@@ -1,4 +1,5 @@
 main:
+	call *clearscreen
 	mhml *welcome
 	call *printf
 shellloop:
@@ -98,6 +99,14 @@ fgetsend:
 
 strcmp:
 	limm  e    0x00				; NULL termination
+	mov   mh   a
+	mov   ml   b
+	llh   ra
+	cmp   ra   e
+	jne   *strcmploop
+strcmpeend:
+	limm  cmp  0x01
+	jmp   *strcmpend
 strcmploop:
 	mov   mh   a
 	mov   ml   b
