@@ -4,11 +4,8 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <errno.h>
-#include <limits.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -55,9 +52,8 @@ LABEL labelcheck(const char *input) {
         strncpy(result.modified_str, input, len - 1);
         result.modified_str[len - 1] = '\0';
         result.isLabel = true;
-    } else {
+    } else
         strcpy(result.modified_str, input);
-    }
 
     return result;
 }
@@ -69,7 +65,7 @@ bool insertSymbolAddress(char *symbol_str)
     if (symbol_str[0] == '*') {
         char label[256] = {0};
         strcpy(label, symbol_str + 1);
-        for (int h = 0; h < sym_count; h++) {
+        for (int h = 0; h < sym_count; h++)
             if (strcmp(label, symbols[h].modified_str) == 0) {
                 reloc_offsets[reloc_count++] = roffset;
                 binary[roffset++] = ((uint8_t *)&symbols[h].offset)[0];
@@ -77,20 +73,18 @@ bool insertSymbolAddress(char *symbol_str)
                 label_found = true;
                 break;
             }
-        }
     }
 
     return label_found;
 }
 
 int is_hex16_format(const char *str) {
-    if ((str == NULL || strlen(str) != 6) || (str[0] != '0' || str[1] != 'x'))
+    if((str == NULL || strlen(str) != 6) || (str[0] != '0' || str[1] != 'x'))
         return 0;
 
-    for (int j = 2; j < 6; j++) {
-        if (!isxdigit((unsigned char)str[j]))
+    for(int j = 2; j < 6; j++)
+        if(!isxdigit((unsigned char)str[j]))
             return 0;
-    }
 
     return 1;
 }

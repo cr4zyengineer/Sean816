@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #define MAX_LINES 1000
 #define MAX_WORDS 6
 #define MAX_LINE_LENGTH 126
