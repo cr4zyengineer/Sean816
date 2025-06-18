@@ -2,9 +2,12 @@
  * Header
  *
  */
+#include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <termios.h>
+
+const char *eraseSerialCode = "\b \b";
 
 /*
  * NOTE: Define this to get the offset, note: you have to nullterminate it!
@@ -29,7 +32,10 @@ void device_read(uint16_t addr, uint8_t *value)
 
 void device_write(uint16_t addr, uint8_t value)
 {
-    write(STDOUT_FILENO, &value, 1);
+    if(value == 0x7F)
+        write(STDOUT_FILENO, eraseSerialCode, 3);
+    else
+        write(STDOUT_FILENO, &value, 1);
 }
 
 /*

@@ -18,12 +18,12 @@ shellloop:
 	mov  d   ml
 	call *strcmp
 	je   *shellhelp
+shellloopfail:
 	mhml *unknowncommand
 	call *printf
 	jmp  *shellwaypoint
 shellexit:
 	halt
-	jmp  *shellwaypoint
 shellhelp:
 	mhml *helpcontent
 	call *printf
@@ -66,13 +66,30 @@ printfloop:
 ; b is the second 8bit of the 16bit address
 fgets:
 	limm  c    0x0A				; Loading newline character for comparison
+	limm  d    0x7F
+	limm  g    0x00
+	limm  h    0x00
 fgetsloop:
 	lmem  b    0x00C0			; Loading keyboard input from serial device
+	cmp   d    b				; Check if its a newline character
+	je    *fgetsbs
+	inc   g
 	store b    0x00C0			; Print the keyboard input back to serial device
 	slh   b						; Store the character to the memory address
 	inc   ml					; Increment high bit
 	cmp   c    b				; Check if its a newline character
 	jne   *fgetsloop			; If it is a newline character do not continue loop
+	jmp   *fgetsend
+fgetsbs:
+    cmp   g    h
+    je    *fgetsloop
+fgetsbscont:
+	dec   g
+	store b    0x00C0
+	mov   b    h
+	slh   b
+	dec   ml
+	jmp   *fgetsloop
 fgetsend:
 	dec   ml
 	limm  b    0x00
@@ -90,12 +107,14 @@ strcmploop:
 	llh   rb
 	inc   b
 	inc   d
-	cmp   ra   e
-	je    *strcmpend
 	cmp   rb   e
-	je    *strcmpend
+	je    *strcmpendsrc
 	cmp   ra   rb
 	je    *strcmploop
+strcmpendsrc:
+	cmp   ra   e
+	je   *strcmpend
+	limm  cmp  0x01
 strcmpend:
 	ret
 
