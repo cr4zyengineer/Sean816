@@ -318,10 +318,12 @@ int main(int argc, char *argv[]) {
                 binary[roffset++] = 0x19;
             else if(strcmp(input, "mh") == 0)
                 binary[roffset++] = 0x1A;
-            else if(strcmp(input, "spl") == 0)
+            else if(strcmp(input, "cmp") == 0)
                 binary[roffset++] = 0x1B;
-            else if(strcmp(input, "sph") == 0)
+            else if(strcmp(input, "spl") == 0)
                 binary[roffset++] = 0x1C;
+            else if(strcmp(input, "sph") == 0)
+                binary[roffset++] = 0x1D;
             else if(strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
                 size_t hex_digit_count = strlen(input + 2);
                 unsigned long value = strtoul(input, NULL, 16);
@@ -382,6 +384,7 @@ int main(int argc, char *argv[]) {
     header->reloc_count = reloc_count;
 
     // Writing the final binary to the user specified location
+    remove(argv[2]);
     int fd = open(argv[2], O_WRONLY | O_TRUNC | O_CREAT, 0755);
     if(fd == -1)
     {

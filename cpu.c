@@ -121,10 +121,11 @@ cpu_core_t* cpu_create_core(void)
     core->reg[0x18] = &core->mo;
     core->reg[0x19] = &core->ml;
     core->reg[0x1A] = &core->mh;
-    core->reg[0x1B] = ((uint8_t*)&core->sp) + 1;
-    core->reg[0x1C] = ((uint8_t*)&core->sp);
+    core->reg[0x1B] = &core->cmp;
+    core->reg[0x1C] = ((uint8_t*)&core->sp) + 1;
+    core->reg[0x1D] = ((uint8_t*)&core->sp);
 
-    for(uint8_t i = 0; i < 0x1A; i++)
+    for(uint8_t i = 0; i < 0x1B; i++)
         *core->reg[i] = 0x00;
 
     return core;
