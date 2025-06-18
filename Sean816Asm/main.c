@@ -107,9 +107,8 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
     while (raw_i_n < 6 && s[raw_i_n] != NULL && s[raw_i_n][0] != ';')
     {
         if(is_hex16_format(s[raw_i_n]) || islabel(s[raw_i_n]))
-            param += 2;
-        else
             param++;
+        param++;
 
         raw_i_n++;
     }
