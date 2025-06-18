@@ -32,16 +32,30 @@ void read_file(char *filename) {
             size_t len = 0;
 
             if (*p == '"') {
-                // Quoted string
-                p++;  // skip the opening quote
-                start = p;
+                p++;
                 while (*p && *p != '"') {
-                    if (len < MAX_LINE_LENGTH - 1) word[len++] = *p;
-                    p++;
+                    if (*p == '\\') {
+                        p++;
+                        switch (*p) {
+                        case 'n': word[len++] = '\n'; break;
+                        case 't': word[len++] = '\t'; break;
+                        case 'r': word[len++] = '\r'; break;
+                        case '\\': word[len++] = '\\'; break;
+                        case '"': word[len++] = '"'; break;
+                        case '0': word[len++] = '\0'; break;
+                        default:
+                            word[len++] = '\\';
+                            if (*p) word[len++] = *p;
+                            break;
+                        }
+                        if (*p) p++;
+                    } else {
+                        word[len++] = *p++;
+                    }
+                    if (len >= MAX_LINE_LENGTH - 1) break;
                 }
-                if (*p == '"') p++;  // skip closing quote
+                if (*p == '"') p++;
             } else {
-                // Non-quoted word
                 start = p;
                 while (*p && !isspace(*p)) {
                     if (len < MAX_LINE_LENGTH - 1) word[len++] = *p;

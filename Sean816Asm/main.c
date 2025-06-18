@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
                     if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
                         roffset++;
                     else if(strcmp(raw[i][0], "str") == 0) {
-                        roffset += strlen(raw[i][1]);
+                        roffset += strlen(raw[i][1]) - 1;
                     }
                 }
             } else if(islabel(raw[i][j]))
@@ -251,9 +251,7 @@ int main(int argc, char *argv[]) {
             binary[roffset++] = OP_XOR;
         else if(opcmp("not", raw[raw_i], 1, 1))
             binary[roffset++] = OP_NOT;
-        else if(opcmp("str", raw[raw_i], 1, 1))
-            roffset++;
-        else {
+        else if(!opcmp("str", raw[raw_i], 1, 1)) {
             printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
             return 1;
         }
@@ -344,6 +342,7 @@ int main(int argc, char *argv[]) {
                 printf("roff: %d | len: %zu\n", roffset, len);
                 for(size_t i = 0; i < len; i++)
                     binary[roffset++] = input[i];
+                binary[roffset++] = '\0';
                 printf("roff: %d\n", roffset);
             } else if(!insertSymbolAddress(input)) {
                 printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
