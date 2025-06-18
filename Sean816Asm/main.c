@@ -106,7 +106,7 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
 
     while (raw_i_n < 6 && s[raw_i_n] != NULL && s[raw_i_n][0] != ';')
     {
-        if (is_hex16_format(s[raw_i_n]) || s[raw_i_n][0] == '*' || s[raw_i_n][0] == '"')
+        if(is_hex16_format(s[raw_i_n]) || islabel(s[raw_i_n]))
             param += 2;
         else
             param++;
@@ -114,9 +114,12 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
         raw_i_n++;
     }
 
-    if (param < minP || param > maxP)
+    if(param < minP || param > maxP)
     {
-        printf("Error:%d: Expected %d to %d parameters, but got %d\n", raw_i + 1, minP, maxP, param);
+        if(minP != maxP)
+            printf("Error:%d: Expected %d to %d parameters, but got %d\n", raw_i + 1, minP, maxP, param);
+        else
+            printf("Error:%d: Expected %d parameters, but got %d\n", raw_i + 1, minP, param);
         exit(1);
     }
 }
