@@ -13,6 +13,10 @@
 #define MEMORY_MAPPED_IO_REGION_SIZE 0x00FF
 
 typedef struct {
+    // RAW Memory Stuff
+    uint8_t value;
+
+    // IO Stuff
     bool isSet;
     void (*rfunction)(uint16_t addr, uint8_t *value);
     void (*wfunction)(uint16_t addr, uint8_t value);
@@ -23,8 +27,6 @@ typedef struct {
  *
  */
 void memory_io_set(uint16_t addr, void *rfunction, void *wfunction);
-void memory_io_read(uint16_t addr, uint8_t *value);
-void memory_io_write(uint16_t addr, uint8_t value);
 
 /*
  * Read and write

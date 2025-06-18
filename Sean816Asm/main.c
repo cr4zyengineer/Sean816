@@ -289,91 +289,62 @@ int main(int argc, char *argv[]) {
 
             if(strcmp(input, "a") == 0) {
                 binary[roffset++] = 0x00;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "b") == 0) {
                 binary[roffset++] = 0x01;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "c") == 0) {
                 binary[roffset++] = 0x02;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "d") == 0) {
                 binary[roffset++] = 0x03;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "e") == 0) {
                 binary[roffset++] = 0x04;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "f") == 0) {
                 binary[roffset++] = 0x05;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "g") == 0) {
                 binary[roffset++] = 0x06;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "h") == 0) {
                 binary[roffset++] = 0x07;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "ra") == 0) {
                 binary[roffset++] = 0x08;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "rb") == 0) {
                 binary[roffset++] = 0x09;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "rc") == 0) {
                 binary[roffset++] = 0x0A;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "rd") == 0) {
                 binary[roffset++] = 0x0B;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "re") == 0) {
                 binary[roffset++] = 0x0C;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "rf") == 0) {
                 binary[roffset++] = 0x0D;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "rg") == 0) {
                 binary[roffset++] = 0x0E;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "rh") == 0) {
                 binary[roffset++] = 0x0F;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "ga") == 0) {
                 binary[roffset++] = 0x10;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "gb") == 0) {
                 binary[roffset++] = 0x11;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "gc") == 0) {
                 binary[roffset++] = 0x12;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "gd") == 0) {
                 binary[roffset++] = 0x13;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "ge") == 0) {
                 binary[roffset++] = 0x14;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "gf") == 0) {
                 binary[roffset++] = 0x15;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "gg") == 0) {
                 binary[roffset++] = 0x16;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "gh") == 0) {
                 binary[roffset++] = 0x17;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "mo") == 0) {
                 binary[roffset++] = 0x18;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "ml") == 0) {
                 binary[roffset++] = 0x19;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "mh") == 0) {
                 binary[roffset++] = 0x1A;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "spl") == 0) {
                 binary[roffset++] = 0x1B;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(strcmp(input, "sph") == 0) {
                 binary[roffset++] = 0x1C;
-                binary[rinsoffset] |= (0b00000001 & 1) << (7 - rinstypecnt++);
             } else if(input[0] == '*') {
                 insertSymbolAddress(input);
             } else if (input[0] == 'H') {
