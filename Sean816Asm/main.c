@@ -127,6 +127,16 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
     }
 }
 
+bool opcmp(const char *a, char *b[6], uint8_t c, uint8_t d)
+{
+    bool isOpcode = (strcmp(a, b[0]) == 0);
+
+    if(isOpcode)
+        enoughParam(b, c, d);
+
+    return isOpcode;
+}
+
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         printf("Usage: %s <input file> <output file>\n", argv[0]);
@@ -184,96 +194,67 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (strcmp("halt", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 0, 0);
+        if(opcmp("halt", raw[raw_i], 0, 0))
             binary[roffset++] = OP_HLT;
-        } else if (strcmp("load", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 3);
+        else if(opcmp("load", raw[raw_i], 2, 3))
             binary[roffset++] = OP_LOAD;
-        } else if (strcmp("limm", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("limm", raw[raw_i], 2, 2)) {
             binary[roffset++] = OP_LOAD;
             binary[roffset++] = 0x00;
-        } else if (strcmp("lmem", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 3, 3);
+        } else if(opcmp("lmem", raw[raw_i], 3, 3)) {
             binary[roffset++] = OP_LOAD;
             binary[roffset++] = 0x01;
-        } else if (strcmp("store", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 3, 3);
+        } else if(opcmp("store", raw[raw_i], 3, 3))
             binary[roffset++] = OP_STORE;
-        } else if (strcmp("mhml", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("mhml", raw[raw_i], 2, 2))
             binary[roffset++] = OP_MHML;
-        } else if (strcmp("loadlh", raw[raw_i][0]) == 0 || strcmp("llh", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("loadlh", raw[raw_i], 1, 1) || opcmp("llh", raw[raw_i], 1, 1))
             binary[roffset++] = OP_LOADLH;
-        } else if (strcmp("storelh", raw[raw_i][0]) == 0 || strcmp("slh", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("storelh", raw[raw_i], 1, 1) || opcmp("slh", raw[raw_i], 1, 1))
             binary[roffset++] = OP_STORELH;
-        } else if (strcmp("mov", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("mov", raw[raw_i], 2, 2))
             binary[roffset++] = OP_MOV;
-        } else if (strcmp("add", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("add", raw[raw_i], 2, 2))
             binary[roffset++] = OP_ADD;
-        } else if (strcmp("sub", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("sub", raw[raw_i], 2, 2))
             binary[roffset++] = OP_SUB;
-        } else if (strcmp("mul", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("mul", raw[raw_i], 2, 2))
             binary[roffset++] = OP_MUL;
-        } else if (strcmp("div", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("div", raw[raw_i], 2, 2))
             binary[roffset++] = OP_DIV;
-        } else if (strcmp("inc", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("inc", raw[raw_i], 1, 1))
             binary[roffset++] = OP_INC;
-        } else if (strcmp("dec", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("dec", raw[raw_i], 1, 1))
             binary[roffset++] = OP_DEC;
-        } else if (strcmp("jmp", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("jmp", raw[raw_i], 2, 2))
             binary[roffset++] = OP_JMP;
-        } else if (strcmp("cmp", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("cmp", raw[raw_i], 2, 2))
             binary[roffset++] = OP_CMP;
-        } else if (strcmp("je", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("je", raw[raw_i], 2, 2))
             binary[roffset++] = OP_JE;
-        } else if (strcmp("jne", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("jne", raw[raw_i], 2, 2))
             binary[roffset++] = OP_JNE;
-        } else if (strcmp("jg", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("jg", raw[raw_i], 2, 2))
             binary[roffset++] = OP_JG;
-        } else if (strcmp("jl", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("jl", raw[raw_i], 2, 2))
             binary[roffset++] = OP_JL;
-        } else if (strcmp("push", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("push", raw[raw_i], 1, 1))
             binary[roffset++] = OP_PUSH;
-        } else if (strcmp("pop", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("pop", raw[raw_i], 1, 1))
             binary[roffset++] = OP_POP;
-        } else if (strcmp("call", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("call", raw[raw_i], 2, 2))
             binary[roffset++] = OP_CALL;
-        } else if (strcmp("ret", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 0, 0);
+        else if(opcmp("ret", raw[raw_i], 0, 0))
             binary[roffset++] = OP_RET;
-        } else if (strcmp("and", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("and", raw[raw_i], 2, 2))
             binary[roffset++] = OP_AND;
-        } else if (strcmp("or", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("or", raw[raw_i], 2, 2))
             binary[roffset++] = OP_OR;
-        } else if (strcmp("xor", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 2, 2);
+        else if(opcmp("xor", raw[raw_i], 2, 2))
             binary[roffset++] = OP_XOR;
-        } else if (strcmp("not", raw[raw_i][0]) == 0) {
-            enoughParam(raw[raw_i], 1, 1);
+        else if(opcmp("not", raw[raw_i], 1, 1))
             binary[roffset++] = OP_NOT;
-        } else {
+        else {
             printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
             return 1;
         }
@@ -284,92 +265,83 @@ int main(int argc, char *argv[]) {
 
             char *input = raw[raw_i][j + 1];
 
-            if (input == NULL) break;
-            if (input[0] == ';') break;
+            if (input == NULL || input[0] == ';') break;
 
-            if(strcmp(input, "a") == 0) {
+            if(strcmp(input, "a") == 0)
                 binary[roffset++] = 0x00;
-            } else if(strcmp(input, "b") == 0) {
+            else if(strcmp(input, "b") == 0)
                 binary[roffset++] = 0x01;
-            } else if(strcmp(input, "c") == 0) {
+            else if(strcmp(input, "c") == 0)
                 binary[roffset++] = 0x02;
-            } else if(strcmp(input, "d") == 0) {
+            else if(strcmp(input, "d") == 0)
                 binary[roffset++] = 0x03;
-            } else if(strcmp(input, "e") == 0) {
+            else if(strcmp(input, "e") == 0)
                 binary[roffset++] = 0x04;
-            } else if(strcmp(input, "f") == 0) {
+            else if(strcmp(input, "f") == 0)
                 binary[roffset++] = 0x05;
-            } else if(strcmp(input, "g") == 0) {
+            else if(strcmp(input, "g") == 0)
                 binary[roffset++] = 0x06;
-            } else if(strcmp(input, "h") == 0) {
+            else if(strcmp(input, "h") == 0)
                 binary[roffset++] = 0x07;
-            } else if(strcmp(input, "ra") == 0) {
+            else if(strcmp(input, "ra") == 0)
                 binary[roffset++] = 0x08;
-            } else if(strcmp(input, "rb") == 0) {
+            else if(strcmp(input, "rb") == 0)
                 binary[roffset++] = 0x09;
-            } else if(strcmp(input, "rc") == 0) {
+            else if(strcmp(input, "rc") == 0)
                 binary[roffset++] = 0x0A;
-            } else if(strcmp(input, "rd") == 0) {
+            else if(strcmp(input, "rd") == 0)
                 binary[roffset++] = 0x0B;
-            } else if(strcmp(input, "re") == 0) {
+            else if(strcmp(input, "re") == 0)
                 binary[roffset++] = 0x0C;
-            } else if(strcmp(input, "rf") == 0) {
+            else if(strcmp(input, "rf") == 0)
                 binary[roffset++] = 0x0D;
-            } else if(strcmp(input, "rg") == 0) {
+            else if(strcmp(input, "rg") == 0)
                 binary[roffset++] = 0x0E;
-            } else if(strcmp(input, "rh") == 0) {
+            else if(strcmp(input, "rh") == 0)
                 binary[roffset++] = 0x0F;
-            } else if(strcmp(input, "ga") == 0) {
+            else if(strcmp(input, "ga") == 0)
                 binary[roffset++] = 0x10;
-            } else if(strcmp(input, "gb") == 0) {
+            else if(strcmp(input, "gb") == 0)
                 binary[roffset++] = 0x11;
-            } else if(strcmp(input, "gc") == 0) {
+            else if(strcmp(input, "gc") == 0)
                 binary[roffset++] = 0x12;
-            } else if(strcmp(input, "gd") == 0) {
+            else if(strcmp(input, "gd") == 0)
                 binary[roffset++] = 0x13;
-            } else if(strcmp(input, "ge") == 0) {
+            else if(strcmp(input, "ge") == 0)
                 binary[roffset++] = 0x14;
-            } else if(strcmp(input, "gf") == 0) {
+            else if(strcmp(input, "gf") == 0)
                 binary[roffset++] = 0x15;
-            } else if(strcmp(input, "gg") == 0) {
+            else if(strcmp(input, "gg") == 0)
                 binary[roffset++] = 0x16;
-            } else if(strcmp(input, "gh") == 0) {
+            else if(strcmp(input, "gh") == 0)
                 binary[roffset++] = 0x17;
-            } else if(strcmp(input, "mo") == 0) {
+            else if(strcmp(input, "mo") == 0)
                 binary[roffset++] = 0x18;
-            } else if(strcmp(input, "ml") == 0) {
+            else if(strcmp(input, "ml") == 0)
                 binary[roffset++] = 0x19;
-            } else if(strcmp(input, "mh") == 0) {
+            else if(strcmp(input, "mh") == 0)
                 binary[roffset++] = 0x1A;
-            } else if(strcmp(input, "spl") == 0) {
+            else if(strcmp(input, "spl") == 0)
                 binary[roffset++] = 0x1B;
-            } else if(strcmp(input, "sph") == 0) {
+            else if(strcmp(input, "sph") == 0)
                 binary[roffset++] = 0x1C;
-            } else if(input[0] == '*') {
+            else if(input[0] == '*')
                 insertSymbolAddress(input);
-            } else if (input[0] == 'H') {
-                input++; // Skip 'H'
-                uint16_t value = (uint16_t)atoi(input);
-                uint8_t *array = (uint8_t *)&value;
-                binary[roffset++] = array[0];
-                binary[roffset++] = array[1];
-            } else if (strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
+            else if(strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
                 size_t hex_digit_count = strlen(input + 2); // how many digits after 0x
                 unsigned long value = strtoul(input, NULL, 16); // convert hex string
 
-                if (hex_digit_count <= 2) {
-                    // Treat as 8-bit
+                if (hex_digit_count <= 2)
                     binary[roffset++] = (uint8_t)value;
-                } else if (hex_digit_count <= 4) {
-                    // Treat as 16-bit
+                else if (hex_digit_count <= 4) {
                     binary[roffset++] = (uint8_t)(value & 0xFF);   // Low byte
                     binary[roffset++] = (uint8_t)(value >> 8);     // High byte
                 } else {
-                    fprintf(stderr, "Invalid hex format (too large): %s\n", input);
+                    fprintf(stderr, "Error:%d: Invalid hex format (too large) for %s\n", raw_i + 1, input);
+                    return 1;
                 }
             } else if(is_number(input)) {
-                int number = atoi(input);
-                binary[roffset++] = (uint8_t)(number);
+                binary[roffset++] = (uint8_t)(atoi(input));
             } else {
                 printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
                 return 1;
@@ -380,41 +352,41 @@ int main(int argc, char *argv[]) {
     // Freeing raw content
     free_content();
 
-    // Generating final binary
-    uint16_t final_offset = sizeof(sean816_rom_executable_header_t);
-    uint16_t old_offset = 0;
-    uint8_t final_binary[UINT16_MAX];
-
+    // Checking for main symbol
     if(main_symbol == 0xFFFF)
     {
         printf("Error: \"main\" symbol not found!\n");
         return 1;
     }
 
-    // NOTE: Here we prepare buffers before the copy over
-    uint8_t *reloc_buffer = (uint8_t*)&reloc_offsets;
+    // Preparing final binary creation
+    uint16_t final_offset = sizeof(sean816_rom_executable_header_t);
+    uint8_t final_binary[UINT16_MAX];
 
-    // NOTE: Copy reloc offset table
-    for(old_offset = final_offset; final_offset < ((sizeof(uint16_t) * reloc_count) + old_offset); final_offset++)
-        final_binary[final_offset] = reloc_buffer[final_offset - old_offset];
+    // Copy reloc table section to final binary
+    memcpy((void*)(final_binary + final_offset), (uint8_t*)&reloc_offsets, sizeof(uint16_t) * reloc_count);
+    final_offset += (sizeof(uint16_t) * reloc_count);
 
-    uint16_t binary_start_offset = final_offset;
-    memcpy((void*)(final_binary + binary_start_offset), binary, roffset);
+    // Copy code section to final binary
+    size_t binary_start_offset = final_offset;
+    memcpy((void*)(final_binary + final_offset), binary, roffset);
+    final_offset += roffset;
 
+    // Generating header into final binaries header section
     sean816_rom_executable_header_t *header = (sean816_rom_executable_header_t*)&final_binary[0x00];
     header->magic16 = SEAN816_HEADER_MAGIC;
     header->code_offset = binary_start_offset;
     header->entry_offset = binary_start_offset + main_symbol;
     header->reloc_count = reloc_count;
 
-    // NOTE: Here we just write out what we have to write out??
+    // Writing the final binary to the user specified location
     int fd = open(argv[2], O_WRONLY | O_TRUNC | O_CREAT, 0755);
     if(fd == -1)
     {
         printf("Error: Failed to open binary file\n");
         return 1;
     }
-    write(fd, final_binary, final_offset + roffset);
+    write(fd, final_binary, final_offset);
 
     return 0;
 }

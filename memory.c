@@ -26,6 +26,8 @@ void memory_io_set(uint16_t addr,
                    void *rfunction,
                    void *wfunction)
 {
+    if(addr >= MEMORY_MAPPED_IO_REGION_SIZE)
+        return;
     iomem[addr].isSet = true;
     iomem[addr].rfunction = rfunction;
     iomem[addr].wfunction = wfunction;
