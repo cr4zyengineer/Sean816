@@ -341,11 +341,9 @@ int main(int argc, char *argv[]) {
                 binary[roffset++] = (uint8_t)(atoi(input));
             } else if(strcmp("str", raw[raw_i][0]) == 0) {
                 size_t len = strlen(input);
-                printf("roff: %d | len: %zu\n", roffset, len);
                 for(size_t i = 0; i < len; i++)
                     binary[roffset++] = input[i];
                 binary[roffset++] = '\0';
-                printf("roff: %d\n", roffset);
             } else if(!insertSymbolAddress(input)) {
                 printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
                 return 1;
