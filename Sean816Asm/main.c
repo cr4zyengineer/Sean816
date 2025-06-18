@@ -131,12 +131,7 @@ bool opcmp(const char *a, char *b[6], uint8_t c, uint8_t d, uint8_t opcode)
     {
         enoughParam(b, c, d);
         if(opcode != 0xFF)
-        {
-            printf("UWU\n");
             binary[roffset++] = opcode;
-        } else {
-            printf("STFU!");
-        }
     }
 
     return isOpcode;
