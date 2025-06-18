@@ -123,12 +123,21 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
     }
 }
 
-bool opcmp(const char *a, char *b[6], uint8_t c, uint8_t d)
+bool opcmp(const char *a, char *b[6], uint8_t c, uint8_t d, uint8_t opcode)
 {
     bool isOpcode = (strcmp(a, b[0]) == 0);
 
     if(isOpcode)
+    {
         enoughParam(b, c, d);
+        if(opcode != 0xFF)
+        {
+            printf("UWU\n");
+            binary[roffset++] = opcode;
+        } else {
+            printf("STFU!");
+        }
+    }
 
     return isOpcode;
 }
@@ -191,69 +200,48 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if(opcmp("halt", raw[raw_i], 0, 0))
-            binary[roffset++] = OP_HLT;
-        else if(opcmp("load", raw[raw_i], 2, 3))
-            binary[roffset++] = OP_LOAD;
-        else if(opcmp("limm", raw[raw_i], 2, 2)) {
-            binary[roffset++] = OP_LOAD;
+        if(opcmp("limm", raw[raw_i], 2, 2, OP_LOAD))
             binary[roffset++] = 0x00;
-        } else if(opcmp("lmem", raw[raw_i], 3, 3)) {
-            binary[roffset++] = OP_LOAD;
+        else if(opcmp("lmem", raw[raw_i], 3, 3, OP_LOAD))
             binary[roffset++] = 0x01;
-        } else if(opcmp("store", raw[raw_i], 3, 3))
-            binary[roffset++] = OP_STORE;
-        else if(opcmp("mhml", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_MHML;
-        else if(opcmp("loadlh", raw[raw_i], 1, 1) || opcmp("llh", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_LOADLH;
-        else if(opcmp("storelh", raw[raw_i], 1, 1) || opcmp("slh", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_STORELH;
-        else if(opcmp("mov", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_MOV;
-        else if(opcmp("add", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_ADD;
-        else if(opcmp("sub", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_SUB;
-        else if(opcmp("mul", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_MUL;
-        else if(opcmp("div", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_DIV;
-        else if(opcmp("inc", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_INC;
-        else if(opcmp("dec", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_DEC;
-        else if(opcmp("jmp", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_JMP;
-        else if(opcmp("cmp", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_CMP;
-        else if(opcmp("je", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_JE;
-        else if(opcmp("jne", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_JNE;
-        else if(opcmp("jg", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_JG;
-        else if(opcmp("jl", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_JL;
-        else if(opcmp("push", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_PUSH;
-        else if(opcmp("pop", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_POP;
-        else if(opcmp("call", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_CALL;
-        else if(opcmp("ret", raw[raw_i], 0, 0))
-            binary[roffset++] = OP_RET;
-        else if(opcmp("and", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_AND;
-        else if(opcmp("or", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_OR;
-        else if(opcmp("xor", raw[raw_i], 2, 2))
-            binary[roffset++] = OP_XOR;
-        else if(opcmp("not", raw[raw_i], 1, 1))
-            binary[roffset++] = OP_NOT;
-        else if(!opcmp("str", raw[raw_i], 1, 1)) {
-            printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
-            return 1;
+        else if(!(opcmp("halt", raw[raw_i], 0, 0, OP_HLT) ||
+           opcmp("load", raw[raw_i], 2, 3, OP_LOAD) ||
+           opcmp("store", raw[raw_i], 3, 3, OP_STORE) ||
+           opcmp("mhml", raw[raw_i], 2, 2, OP_MHML) ||
+           opcmp("loadlh", raw[raw_i], 1, 1, OP_LOADLH) ||
+           opcmp("llh", raw[raw_i], 1, 1, OP_LOADLH) ||
+           opcmp("storelh", raw[raw_i], 1, 1, OP_STORELH) ||
+           opcmp("slh", raw[raw_i], 1, 1, OP_STORELH) ||
+           opcmp("mov", raw[raw_i], 2, 2, OP_MOV) ||
+           opcmp("add", raw[raw_i], 2, 2, OP_ADD) ||
+           opcmp("sub", raw[raw_i], 2, 2, OP_SUB) ||
+           opcmp("mul", raw[raw_i], 2, 2, OP_MUL) ||
+           opcmp("div", raw[raw_i], 2, 2, OP_DIV) ||
+           opcmp("inc", raw[raw_i], 1, 1, OP_INC) ||
+           opcmp("dec", raw[raw_i], 1, 1, OP_DEC) ||
+           opcmp("jmp", raw[raw_i], 2, 2, OP_JMP) ||
+           opcmp("cmp", raw[raw_i], 2, 2, OP_CMP) ||
+           opcmp("je", raw[raw_i], 2, 2, OP_JE) ||
+           opcmp("jne", raw[raw_i], 2, 2, OP_JNE) ||
+           opcmp("jg", raw[raw_i], 2, 2, OP_JG) ||
+           opcmp("jl", raw[raw_i], 2, 2, OP_JL) ||
+           opcmp("push", raw[raw_i], 1, 1, OP_PUSH) ||
+           opcmp("pop", raw[raw_i], 1, 1, OP_POP) ||
+           opcmp("call", raw[raw_i], 2, 2, OP_CALL) ||
+           opcmp("ret", raw[raw_i], 0, 0, OP_RET) ||
+           opcmp("and", raw[raw_i], 2, 2, OP_AND) ||
+           opcmp("or", raw[raw_i], 2, 2, OP_OR) ||
+           opcmp("xor", raw[raw_i], 2, 2, OP_XOR) ||
+           opcmp("not", raw[raw_i], 1, 1, OP_NOT) ||
+           opcmp("str", raw[raw_i], 1, 1, 0xFF))) {
+            if(opcmp("limm", raw[raw_i], 2, 2, OP_LOAD))
+                binary[roffset++] = 0x00;
+            else if(opcmp("lmem", raw[raw_i], 3, 3, OP_LOAD))
+                binary[roffset++] = 0x01;
+            else {
+                printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
+                return 1;
+            }
         }
 
         for (int j = 0; j < MAX_WORDS; j++) {
@@ -331,8 +319,8 @@ int main(int argc, char *argv[]) {
                 if(hex_digit_count == 2)
                     binary[roffset++] = (uint8_t)value;
                 else if(hex_digit_count == 4) {
-                    binary[roffset++] = (uint8_t)(value & 0xFF);   // Low byte
-                    binary[roffset++] = (uint8_t)(value >> 8);     // High byte
+                    binary[roffset++] = (uint8_t)(value & 0xFF);
+                    binary[roffset++] = (uint8_t)(value >> 8);
                 } else {
                     fprintf(stderr, "Error:%d: Invalid hex format (too large) for %s\n", raw_i + 1, input);
                     return 1;
