@@ -62,10 +62,6 @@ LABEL labelcheck(const char *input) {
     return result;
 }
 
-bool islabel(const char *input) {
-    return (input[0] == '*');
-}
-
 bool insertSymbolAddress(char *symbol_str)
 {
     bool label_found = false;
@@ -99,14 +95,16 @@ int is_hex16_format(const char *str) {
     return 1;
 }
 
-void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
+void enoughParam(char *s[6],
+                 uint8_t minP,
+                 uint8_t maxP)
 {
     uint8_t param = 0;
     uint8_t raw_i_n = 1;
 
     while (raw_i_n < 6 && s[raw_i_n] != NULL && s[raw_i_n][0] != ';')
     {
-        if(is_hex16_format(s[raw_i_n]) || islabel(s[raw_i_n]))
+        if(is_hex16_format(s[raw_i_n]) || (s[raw_i_n][0] == '*'))
             param++;
         param++;
 
@@ -123,7 +121,11 @@ void enoughParam(char *s[6], uint8_t minP, uint8_t maxP)
     }
 }
 
-bool opcmp(const char *a, char *b[6], uint8_t c, uint8_t d, uint8_t opcode)
+bool opcmp(const char *a,
+           char *b[6],
+           uint8_t c,
+           uint8_t d,
+           uint8_t opcode)
 {
     bool isOpcode = (strcmp(a, b[0]) == 0);
 
@@ -137,7 +139,9 @@ bool opcmp(const char *a, char *b[6], uint8_t c, uint8_t d, uint8_t opcode)
     return isOpcode;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc,
+         char *argv[])
+{
     if (argc < 3) {
         printf("Usage: %s <input file> <output file>\n", argv[0]);
         return 1;
@@ -171,11 +175,10 @@ int main(int argc, char *argv[]) {
                 {
                     if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
                         roffset++;
-                    else if(strcmp(raw[i][0], "str") == 0) {
+                    else if(strcmp(raw[i][0], "str") == 0)
                         roffset += strlen(raw[i][1]) - 1;
-                    }
                 }
-            } else if(islabel(raw[i][j]))
+            } else if(raw[i][j][0] == '*')
                 roffset++;
             roffset++;
         }
