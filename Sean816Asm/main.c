@@ -91,17 +91,14 @@ void insertSymbolAddress(char *symbol_str)
 }
 
 int is_hex16_format(const char *str) {
-    // Check length: must be exactly 6 characters ("0x" + 4 hex digits)
-    if (str == NULL || strlen(str) != 6)
+    if ((str == NULL || strlen(str) != 6) || (str[0] != '0' || str[1] != 'x'))
         return 0;
-    // Check prefix "0x"
-    if (str[0] != '0' || str[1] != 'x')
-        return 0;
-    // Check that the next 4 characters are hex digits
+
     for (int j = 2; j < 6; j++) {
         if (!isxdigit((unsigned char)str[j]))
             return 0;
     }
+
     return 1;
 }
 
@@ -171,19 +168,16 @@ int main(int argc, char *argv[]) {
                     if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
                         roffset++;
 
-            } else if(islabel(raw[i][j])) {
+            } else if(islabel(raw[i][j]))
                 roffset++;
-            }
-
             roffset++;
         }
     }
 
     roffset = 0;
     for (raw_i = 0; raw_i < line_number; raw_i++) {
-        if (raw[raw_i] == NULL || raw[raw_i][0] == NULL || raw[raw_i][0][0] == ';') {
+        if (raw[raw_i] == NULL || raw[raw_i][0] == NULL || raw[raw_i][0][0] == ';')
             continue;
-        }
 
         LABEL checklabel = labelcheck(raw[raw_i][0]);
         if(checklabel.had_colon) {
@@ -328,12 +322,12 @@ int main(int argc, char *argv[]) {
             else if(input[0] == '*')
                 insertSymbolAddress(input);
             else if(strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
-                size_t hex_digit_count = strlen(input + 2); // how many digits after 0x
-                unsigned long value = strtoul(input, NULL, 16); // convert hex string
+                size_t hex_digit_count = strlen(input + 2);
+                unsigned long value = strtoul(input, NULL, 16);
 
-                if (hex_digit_count <= 2)
+                if(hex_digit_count == 2)
                     binary[roffset++] = (uint8_t)value;
-                else if (hex_digit_count <= 4) {
+                else if(hex_digit_count == 4) {
                     binary[roffset++] = (uint8_t)(value & 0xFF);   // Low byte
                     binary[roffset++] = (uint8_t)(value >> 8);     // High byte
                 } else {
