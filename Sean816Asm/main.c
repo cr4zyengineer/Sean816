@@ -17,8 +17,8 @@
 #include "../ROM/header.h"
 
 typedef struct {
+    bool isLabel;
     char *modified_str;
-    bool had_colon;
     uint16_t offset;
 } LABEL;
 
@@ -48,13 +48,13 @@ LABEL labelcheck(const char *input) {
     LABEL result;
     size_t len = strlen(input);
 
-    result.had_colon = false;
+    result.isLabel = false;
     result.modified_str = (char *)malloc(len + 1);
 
     if (input[len - 1] == ':') {
         strncpy(result.modified_str, input, len - 1);
         result.modified_str[len - 1] = '\0';
-        result.had_colon = true;
+        result.isLabel = true;
     } else {
         strcpy(result.modified_str, input);
     }
@@ -66,7 +66,7 @@ bool islabel(const char *input) {
     return (input[0] == '*');
 }
 
-void insertSymbolAddress(char *symbol_str)
+bool insertSymbolAddress(char *symbol_str)
 {
     bool label_found = false;
 
@@ -74,7 +74,7 @@ void insertSymbolAddress(char *symbol_str)
         char label[256] = {0};
         strcpy(label, symbol_str + 1);
         for (int h = 0; h < sym_count; h++) {
-            if (symbols[h].had_colon && strcmp(label, symbols[h].modified_str) == 0) {
+            if (strcmp(label, symbols[h].modified_str) == 0) {
                 reloc_offsets[reloc_count++] = roffset;
                 binary[roffset++] = ((uint8_t *)&symbols[h].offset)[0];
                 binary[roffset++] = ((uint8_t *)&symbols[h].offset)[1];
@@ -84,10 +84,7 @@ void insertSymbolAddress(char *symbol_str)
         }
     }
 
-    if (!label_found) {
-        printf("Error:%d: Unknown label \"%s\"\n", raw_i + 1, symbol_str + 1);
-        exit(1);
-    }
+    return label_found;
 }
 
 int is_hex16_format(const char *str) {
@@ -156,7 +153,7 @@ int main(int argc, char *argv[]) {
                 roffset++;
 
             symbols[sym_count] = labelcheck(raw[i][j]);
-            if(symbols[sym_count].had_colon) {
+            if(symbols[sym_count].isLabel) {
                 if(main_symbol == 0xFFFF && strcmp(symbols[sym_count].modified_str, "main") == 0)
                     main_symbol = roffset;
                 symbols[sym_count].offset = roffset;
@@ -180,7 +177,7 @@ int main(int argc, char *argv[]) {
             continue;
 
         LABEL checklabel = labelcheck(raw[raw_i][0]);
-        if(checklabel.had_colon) {
+        if(checklabel.isLabel) {
             raw_i++;
             if(raw[raw_i][0] == NULL) {
                 raw_i++;
@@ -319,8 +316,6 @@ int main(int argc, char *argv[]) {
                 binary[roffset++] = 0x1B;
             else if(strcmp(input, "sph") == 0)
                 binary[roffset++] = 0x1C;
-            else if(input[0] == '*')
-                insertSymbolAddress(input);
             else if(strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
                 size_t hex_digit_count = strlen(input + 2);
                 unsigned long value = strtoul(input, NULL, 16);
@@ -336,7 +331,7 @@ int main(int argc, char *argv[]) {
                 }
             } else if(is_number(input)) {
                 binary[roffset++] = (uint8_t)(atoi(input));
-            } else {
+            } else if(!insertSymbolAddress(input)) {
                 printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
                 return 1;
             }
