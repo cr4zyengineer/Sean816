@@ -138,10 +138,23 @@ void cpu_exec_core(cpu_core_t *core)
 {
     while(1)
     {
+        core->tn = 0;
         memory_read(core->pc++, &core->instruction);
         if(!(core->instruction == OP_HLT || core->instruction > 0x1A) && opcode_table[core->instruction])
             opcode_table[core->instruction](core);
         else
             return;
     }
+}
+
+/*
+ * Helper function to get as many args as needed by a instruction
+ */
+void cpu_core_get_args(cpu_core_t *core, uint8_t count)
+{
+    // Temporary comments
+    // We need to get the pointer to each value into the targ, why... latter operand decodation will happen here
+    // Wait... we need decodation already
+    for(uint8_t i = 0; i < count; i++)
+        memory_read(core->pc++, &core->targ[i + core->tn]);
 }

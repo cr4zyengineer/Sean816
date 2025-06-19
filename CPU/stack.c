@@ -33,8 +33,9 @@ static void cpu_prvt_pop16(cpu_core_t *core, uint16_t *value)
 
 void cpu_push(cpu_core_t *core)
 {
-    memory_read(core->pc++, &core->ta);    // Reading the value that is getting pushed
-    cpu_prvt_push(core, *core->reg[core->ta]);
+    cpu_core_get_args(core, 1);
+
+    cpu_prvt_push(core, *core->reg[core->targ[0]]);
 }
 
 void cpu_pop(cpu_core_t *core)
@@ -42,14 +43,14 @@ void cpu_pop(cpu_core_t *core)
     // NOTE: Deny popping over to the caller snapshooted memory and tempering it by checking that we dont overstep it
     if(core->bp >= core->sp) return;
 
-    memory_read(core->pc++, &core->ta);    // Reading the value that is getting pushed
-    cpu_prvt_pop(core, core->reg[core->ta]);
+    cpu_core_get_args(core, 1);
+
+    cpu_prvt_pop(core, core->reg[core->targ[0]]);
 }
 
 void cpu_call(cpu_core_t *core)
 {
-    memory_read(core->pc++, &core->ta);     // Reading first 8bits of address
-    memory_read(core->pc++, &core->tb);     // Reading second 8bits of address
+    cpu_core_get_args(core, 2);
 
     cpu_prvt_push16(core, core->bp);        // save old base pointer
     cpu_prvt_push16(core, core->pc);        // save return address
@@ -69,7 +70,7 @@ void cpu_call(cpu_core_t *core)
     // TODO: If needed we need to add arguments to the calls. the issue is how do we indicate intermediate and register selection, shall it only be register selecttions!?
     // NOTE: Not really a Todo, more of an "Add the logic if current logic is sufficient"
 
-    core->pc =  gather16Bit(core->ta, core->tb);
+    core->pc =  gather16Bit(core->targ[0], core->targ[1]);
 }
 
 void cpu_ret(cpu_core_t *core)

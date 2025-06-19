@@ -7,27 +7,28 @@
 
 void cpu_and(cpu_core_t *core)
 {
-    memory_read(core->pc++, &core->ta);     // Reading register
-    memory_read(core->pc++, &core->tb);     // Reading register
-    *core->reg[core->ta] &= *core->reg[core->tb];
+    cpu_core_get_args(core, 2);
+
+    *core->reg[core->targ[0]] &= *core->reg[core->targ[1]];
 }
 
 void cpu_or(cpu_core_t *core)
 {
-    memory_read(core->pc++, &core->ta);     // Reading register
-    memory_read(core->pc++, &core->tb);     // Reading register
-    *core->reg[core->ta] |= *core->reg[core->tb];
+    cpu_core_get_args(core, 2);
+
+    *core->reg[core->targ[0]] |= *core->reg[core->targ[1]];
 }
 
 void cpu_xor(cpu_core_t *core)
 {
-    memory_read(core->pc++, &core->ta);     // Reading register
-    memory_read(core->pc++, &core->tb);     // Reading register
-    *core->reg[core->ta] ^= *core->reg[core->tb];
+    cpu_core_get_args(core, 2);
+
+    *core->reg[core->targ[0]] ^= *core->reg[core->targ[1]];
 }
 
 void cpu_not(cpu_core_t *core)
 {
-    memory_read(core->pc++, &core->ta);     // Reading register
-    *core->reg[core->ta] = ~(*core->reg[core->ta]);
+    cpu_core_get_args(core, 1);
+
+    *core->reg[core->targ[0]] = ~(*core->reg[core->targ[0]]);
 }

@@ -26,12 +26,11 @@ typedef struct {
 
     // Reserved for the instructions
     // NOTE: ta,tc,tc,td is created to minimise the argument bloat, and cmp is the result of cmp for JE and JNE to use
+    // Updated instruction argument gathering system
     uint8_t instruction;
     uint8_t operandsig;
-    uint8_t ta;
-    uint8_t tb;
-    uint8_t tc;
-    uint8_t td;
+    uint8_t tn;
+    uint8_t targ[4];
     uint8_t cmp;
 
     // Registers for a function to return a value       Return Register
@@ -122,3 +121,4 @@ typedef void (*instruction_t)(cpu_core_t*);
  */
 cpu_core_t* cpu_create_core(void);
 void cpu_exec_core(cpu_core_t *core);
+void cpu_core_get_args(cpu_core_t *core, uint8_t count);
