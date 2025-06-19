@@ -1,5 +1,9 @@
 main:
 	call  *clearscreen
+	mhml  *poc_str
+	mov   a    mh
+	mov   b    ml
+	call  *printf
 	mov   a    0x00
 	mov   c    0x00				; Counter
 mainpreintloop:
@@ -32,6 +36,9 @@ helper_printsp:
 	mov   a 0x20
 	store a 0x00C0
 	ret
+
+poc_str:
+	str "This is a proof of concept code of Sean816!\n"
 
 ;
 ; printf
