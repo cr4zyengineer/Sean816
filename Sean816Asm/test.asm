@@ -6,6 +6,7 @@ main:
 	call  *printf
 	mov   a    0x00
 	mov   c    0x00				; Counter
+	jmp   *mainintloop
 mainpreintloop:
 	cmp   c    0x0A
 	jne   *mainpreintsp
