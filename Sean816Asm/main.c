@@ -115,19 +115,28 @@ void enoughParam(char *s[6],
     }
 }
 
+bool opcmpintl(const char *a,
+               char *b[6])
+{
+    return (strcmp(a, b[0]) == 0);
+}
+
 bool opcmp(const char *a,
            char *b[6],
            uint8_t c,
            uint8_t d,
            uint8_t opcode)
 {
-    bool isOpcode = (strcmp(a, b[0]) == 0);
+    bool isOpcode = opcmpintl(a, b);
 
     if(isOpcode)
     {
         enoughParam(b, c, d);
         if(opcode != 0xFF)
+        {
             binary[roffset++] = opcode;
+            binary[roffset++] = 0x00;
+        }
     }
 
     return isOpcode;
@@ -173,6 +182,8 @@ int main(int argc,
                         roffset += strlen(raw[i][1]) - 1;
                 }
             } else if(raw[i][j][0] == '*')
+                roffset++;
+            else if(j == 0)
                 roffset++;
             roffset++;
         }

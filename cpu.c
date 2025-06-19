@@ -140,6 +140,7 @@ void cpu_exec_core(cpu_core_t *core)
     {
         core->tn = 0;
         memory_read(core->pc++, &core->instruction);
+        memory_read(core->pc++, &core->operandsig);
         if(!(core->instruction == OP_HLT || core->instruction > 0x1A) && opcode_table[core->instruction])
             opcode_table[core->instruction](core);
         else
