@@ -26,6 +26,8 @@ typedef struct {
 
     // Reserved for the instructions
     // NOTE: ta,tc,tc,td is created to minimise the argument bloat, and cmp is the result of cmp for JE and JNE to use
+    uint8_t instruction;
+    uint8_t operandsig;
     uint8_t ta;
     uint8_t tb;
     uint8_t tc;

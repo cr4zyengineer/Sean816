@@ -136,19 +136,12 @@ cpu_core_t* cpu_create_core(void)
  */
 void cpu_exec_core(cpu_core_t *core)
 {
-    // Lets go...
-    uint8_t instruction_id = 0x00;
-    instruction_t instruction = NULL;
     while(1)
     {
-        memory_read(core->pc++, &instruction_id);        // Read the instruction
-
-        //printf("%p -> %p\n", (void*)(uintptr_t)core->pc, (void*)(uintptr_t)instruction_id);
-
-        if(instruction_id == OP_HLT || instruction_id > 0x1A) return;
-
-        instruction = opcode_table[instruction_id];      // Preventing execution of unassigned opcodes
-        if(instruction)
-            instruction(core);              // Execute instruction
+        memory_read(core->pc++, &core->instruction);
+        if(!(core->instruction == OP_HLT || core->instruction > 0x1A) && opcode_table[core->instruction])
+            opcode_table[core->instruction](core);
+        else
+            return;
     }
 }
