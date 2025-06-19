@@ -226,14 +226,8 @@ int main(int argc,
            opcmp("xor", raw[raw_i], 2, 2, OP_XOR) ||
            opcmp("not", raw[raw_i], 1, 1, OP_NOT) ||
            opcmp("str", raw[raw_i], 1, 1, 0xFF))) {
-            if(opcmp("limm", raw[raw_i], 2, 2, OP_LOAD))
-                binary[roffset++] = 0x00;
-            else if(opcmp("lmem", raw[raw_i], 3, 3, OP_LOAD))
-                binary[roffset++] = 0x01;
-            else {
-                printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
-                return 1;
-            }
+            printf("Error:%d: No such operation: %s\n", raw_i + 1, raw[raw_i][0]);
+            return 1;
         }
 
         for (int j = 0; j < MAX_WORDS; j++) {
