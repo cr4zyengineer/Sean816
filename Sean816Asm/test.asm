@@ -1,14 +1,14 @@
 main:
-	limm  a    0x00
-	limm  b    0xFF
+	mov   a    0x00
+	mov   b    0xFF
 
-	limm  c    0x00				; Counter
-	limm  d    0x0A				; Counter limit
+	mov   c    0x00				; Counter
+	mov   d    0x0A				; Counter limit
 mainpreintloop:
 	cmp   c    d
 	jne   *mainpreintsp
 	call  *helper_printnl
-	limm  c 0x00
+	mov   c 0x00
 	jmp   *mainintloop
 mainpreintsp:
 	call  *helper_printsp
@@ -20,18 +20,18 @@ mainintloop:
 	jne   *mainpreintloop
 mainreadline:
 	call  *helper_printnl
-	limm  a    0x02				; Specifying 0x0200 as memory address
-	limm  b    0x00
+	mov   a    0x02				; Specifying 0x0200 as memory address
+	mov   b    0x00
 	call  *fgets				; Getting userinput
 	call  *printf				; Printing it back out
 	halt
 
 helper_printnl:
-	limm  a 0x0A
+	mov   a 0x0A
 	store a 0x00C0
 	ret
 helper_printsp:
-	limm  a 0x20
+	mov   a 0x20
 	store a 0x00C0
 	ret
 
@@ -43,7 +43,7 @@ helper_printsp:
 ; a is the first 8bit of the 16bit address
 ; b is the second 8bit of the 16bit address
 printf:
-	limm  c    0x00				; NULL termination
+	mov   c    0x00				; NULL termination
 	mov   ml   b				; Moving parameters to memory registers
 	mov   mh   a
 printfloop:
@@ -62,18 +62,18 @@ printfloop:
 ; a is the first 8bit of the 16bit address
 ; b is the second 8bit of the 16bit address
 fgets:
-	limm  c    0x0A				; Loading newline character for comparison
+	mov   c    0x0A				; Loading newline character for comparison
 	mov   ml   b				; Moving parameters to memory registers
 	mov   mh   a
 fgetsloop:
-	lmem  b    0x00C0			; Loading keyboard input from serial device
+	load  b    0x00C0			; Loading keyboard input from serial device
 	store b    0x00C0			; Print the keyboard input back to serial device
 	slh   b						; Store the character to the memory address
 	inc   ml					; Increment high bit
 	cmp   c    b				; Check if its a newline character
 	jne   *fgetsloop			; If it is a newline character do not continue loop
 fgetsend:
-	limm  b    0x00
+	mov   b    0x00
 	slh   b
 	ret
 
@@ -85,10 +85,10 @@ fgetsend:
 ; a is the register
 ;
 printint:
-	limm b 0x00
-	limm c 0x0A
-	limm d 0x00
-	limm e 0x64
+	mov  b 0x00
+	mov  c 0x0A
+	mov  d 0x00
+	mov  e 0x64
 printintloopbig:
 	cmp  a e
 	jl   *printintloop
@@ -103,7 +103,7 @@ printintloop:
 	jmp *printintloop
 printend:
 	mhml  0x00C0
-	limm  c 0x30
+	mov   c 0x30
 	add   d c
 	slh   d
 	add   b c
@@ -119,11 +119,11 @@ printend:
 ;
 clearscreen:
 	mhml 0x00C0
-	limm a  0x1B
-	limm b  0x5B
-	limm c  0x33
-	limm d  0x4A
-	limm f  0x48
+	mov  a  0x1B
+	mov  b  0x5B
+	mov  c  0x33
+	mov  d  0x4A
+	mov  f  0x48
 	slh  a
 	slh  b
 	slh  c

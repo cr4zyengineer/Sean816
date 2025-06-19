@@ -11,18 +11,18 @@ void cpu_jmp(cpu_core_t *core)
 {
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(core->targ[0], core->targ[1]);
+    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
 }
 
 void cpu_cmp(cpu_core_t *core)
 {
     cpu_core_get_args(core, 2);
 
-    if(*core->reg[core->targ[0]] == *core->reg[core->targ[1]]) // JE would suceed
+    if(*core->targ[0] == *core->targ[1]) // JE would suceed
         core->cmp = 0;
-    else if(*core->reg[core->targ[0]] > *core->reg[core->targ[1]]) // JG, JNE would succeed
+    else if(*core->targ[0] > *core->targ[1]) // JG, JNE would succeed
         core->cmp = 1;
-    else if(*core->reg[core->targ[0]] < *core->reg[core->targ[1]]) // JL, JNE would suceed
+    else if(*core->targ[0] < *core->targ[1]) // JL, JNE would suceed
         core->cmp = 2;
 }
 
@@ -36,7 +36,7 @@ void cpu_je(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(core->targ[0], core->targ[1]);
+    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
 }
 
 void cpu_jne(cpu_core_t *core)
@@ -49,7 +49,7 @@ void cpu_jne(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(core->targ[0], core->targ[1]);
+    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
 }
 
 void cpu_jg(cpu_core_t *core)
@@ -62,7 +62,7 @@ void cpu_jg(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(core->targ[0], core->targ[1]);
+    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
 }
 
 void cpu_jl(cpu_core_t *core)
@@ -75,5 +75,5 @@ void cpu_jl(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(core->targ[0], core->targ[1]);
+    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
 }

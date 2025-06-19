@@ -92,41 +92,41 @@ cpu_core_t* cpu_create_core(void)
     core->cmp = 0;
 
     for(int i = 0x00; i < 0xFF; i++)
-        core->reg[i] = &core->a;
+        core->regtable[i] = &core->a;
 
-    core->reg[0x00] = &core->a;     // Mapping registers so they are easier to get, like the opcode table thingy
-    core->reg[0x01] = &core->b;
-    core->reg[0x02] = &core->c;
-    core->reg[0x03] = &core->d;
-    core->reg[0x04] = &core->e;
-    core->reg[0x05] = &core->f;
-    core->reg[0x06] = &core->g;
-    core->reg[0x07] = &core->h;
-    core->reg[0x08] = &core->ra;
-    core->reg[0x09] = &core->rb;
-    core->reg[0x0A] = &core->rc;
-    core->reg[0x0B] = &core->rd;
-    core->reg[0x0C] = &core->re;
-    core->reg[0x0D] = &core->rf;
-    core->reg[0x0E] = &core->rg;
-    core->reg[0x0F] = &core->rh;
-    core->reg[0x10] = &core->ga;
-    core->reg[0x11] = &core->gb;
-    core->reg[0x12] = &core->gc;
-    core->reg[0x13] = &core->gd;
-    core->reg[0x14] = &core->ge;
-    core->reg[0x15] = &core->gf;
-    core->reg[0x16] = &core->gg;
-    core->reg[0x17] = &core->gh;
-    core->reg[0x18] = &core->mo;
-    core->reg[0x19] = &core->ml;
-    core->reg[0x1A] = &core->mh;
-    core->reg[0x1B] = &core->cmp;
-    core->reg[0x1C] = ((uint8_t*)&core->sp) + 1;
-    core->reg[0x1D] = ((uint8_t*)&core->sp);
+    core->regtable[0x00] = &core->a;     // Mapping registers so they are easier to get, like the opcode table thingy
+    core->regtable[0x01] = &core->b;
+    core->regtable[0x02] = &core->c;
+    core->regtable[0x03] = &core->d;
+    core->regtable[0x04] = &core->e;
+    core->regtable[0x05] = &core->f;
+    core->regtable[0x06] = &core->g;
+    core->regtable[0x07] = &core->h;
+    core->regtable[0x08] = &core->ra;
+    core->regtable[0x09] = &core->rb;
+    core->regtable[0x0A] = &core->rc;
+    core->regtable[0x0B] = &core->rd;
+    core->regtable[0x0C] = &core->re;
+    core->regtable[0x0D] = &core->rf;
+    core->regtable[0x0E] = &core->rg;
+    core->regtable[0x0F] = &core->rh;
+    core->regtable[0x10] = &core->ga;
+    core->regtable[0x11] = &core->gb;
+    core->regtable[0x12] = &core->gc;
+    core->regtable[0x13] = &core->gd;
+    core->regtable[0x14] = &core->ge;
+    core->regtable[0x15] = &core->gf;
+    core->regtable[0x16] = &core->gg;
+    core->regtable[0x17] = &core->gh;
+    core->regtable[0x18] = &core->mo;
+    core->regtable[0x19] = &core->ml;
+    core->regtable[0x1A] = &core->mh;
+    core->regtable[0x1B] = &core->cmp;
+    core->regtable[0x1C] = ((uint8_t*)&core->sp) + 1;
+    core->regtable[0x1D] = ((uint8_t*)&core->sp);
 
     for(uint8_t i = 0; i < 0x1B; i++)
-        *core->reg[i] = 0x00;
+        *core->regtable[i] = 0x00;
 
     return core;
 }
@@ -139,9 +139,20 @@ void cpu_exec_core(cpu_core_t *core)
     while(1)
     {
         core->tn = 0;
+
+        // Read instruction
         memory_read(core->pc++, &core->instruction);
-        memory_read(core->pc++, &core->operandsig);
-        if(!(core->instruction == OP_HLT || core->instruction > 0x1A) && opcode_table[core->instruction])
+
+        // Decode instruction
+        core->operandsig[0] = (core->instruction >> 5) & 1;
+        core->operandsig[1] = (core->instruction >> 6) & 1;
+        core->operandsig[2] = (core->instruction >> 7) & 1;
+        core->instruction = core->instruction & 0b11111;
+
+        //printf("%d:%p:%d%d%d\n", core->pc, (void*)(uintptr_t)core->instruction, core->operandsig[0], core->operandsig[1], core->operandsig[2]);
+
+        // Execute instruction
+        if(!(core->instruction == OP_HLT || core->instruction > 0x1B) && opcode_table[core->instruction])
             opcode_table[core->instruction](core);
         else
             return;
@@ -153,9 +164,16 @@ void cpu_exec_core(cpu_core_t *core)
  */
 void cpu_core_get_args(cpu_core_t *core, uint8_t count)
 {
-    // Temporary comments
-    // We need to get the pointer to each value into the targ, why... latter operand decodation will happen here
-    // Wait... we need decodation already
     for(uint8_t i = 0; i < count; i++)
-        memory_read(core->pc++, &core->targ[i + core->tn]);
+    {
+        uint8_t value = 0x00;
+        memory_read(core->pc++, &value);
+
+        if(core->operandsig[i] == true)
+            core->targ[i] = core->regtable[value];
+        else {
+            core->timm[i] = value;
+            core->targ[i] = &core->timm[i];
+        }
+    }
 }

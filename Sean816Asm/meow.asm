@@ -1,3 +1,3 @@
 main:
-	limm  a 0x0A
+	mov   a 0x0A
 	store a 0x00C0

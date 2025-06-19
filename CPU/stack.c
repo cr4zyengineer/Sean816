@@ -35,7 +35,7 @@ void cpu_push(cpu_core_t *core)
 {
     cpu_core_get_args(core, 1);
 
-    cpu_prvt_push(core, *core->reg[core->targ[0]]);
+    cpu_prvt_push(core, *core->targ[0]);
 }
 
 void cpu_pop(cpu_core_t *core)
@@ -45,7 +45,7 @@ void cpu_pop(cpu_core_t *core)
 
     cpu_core_get_args(core, 1);
 
-    cpu_prvt_pop(core, core->reg[core->targ[0]]);
+    cpu_prvt_pop(core, core->targ[0]);
 }
 
 void cpu_call(cpu_core_t *core)
@@ -70,7 +70,7 @@ void cpu_call(cpu_core_t *core)
     // TODO: If needed we need to add arguments to the calls. the issue is how do we indicate intermediate and register selection, shall it only be register selecttions!?
     // NOTE: Not really a Todo, more of an "Add the logic if current logic is sufficient"
 
-    core->pc =  gather16Bit(core->targ[0], core->targ[1]);
+    core->pc =  gather16Bit(*core->targ[0], *core->targ[1]);
 }
 
 void cpu_ret(cpu_core_t *core)

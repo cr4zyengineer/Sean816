@@ -29,6 +29,7 @@ static uint16_t roffset = 0;
 static uint16_t reloc_count = 0;
 static uint16_t reloc_offsets[UINT16_MAX];
 static uint16_t main_symbol = UINT16_MAX;
+static uint16_t cur_opcode_off = 0x0000;
 
 bool is_number(const char *str) {
     if (str == NULL || *str == '\0') return false;
@@ -134,8 +135,10 @@ bool opcmp(const char *a,
         enoughParam(b, c, d);
         if(opcode != 0xFF)
         {
-            binary[roffset++] = opcode;
-            binary[roffset++] = 0x00;
+            cur_opcode_off = roffset++;
+            binary[cur_opcode_off] = opcode;
+        } else {
+            cur_opcode_off = 0xFFFF;
         }
     }
 
@@ -155,8 +158,6 @@ int main(int argc,
     for (int i = 0; i < line_number; i++) {
         // Patch for the helper instructions that take up more space
         if(raw[i][0] != NULL)
-            if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
-                roffset++;
 
         for (int j = 0; j < MAX_WORDS; j++) {
             if (raw[i] == NULL || raw[i][j] == NULL || strcmp(raw[i][j], ";") == 0)
@@ -176,14 +177,10 @@ int main(int argc,
                 // We need to recheck the patch when a label was found otherwise some labels will be misaligned!
                 if(raw[i][0] != NULL)
                 {
-                    if(strcmp(raw[i][0], "limm") == 0 || strcmp(raw[i][0], "lmem") == 0)
-                        roffset++;
-                    else if(strcmp(raw[i][0], "str") == 0)
+                    if(strcmp(raw[i][0], "str") == 0)
                         roffset += strlen(raw[i][1]) - 1;
                 }
             } else if(raw[i][j][0] == '*')
-                roffset++;
-            else if(j == 0)
                 roffset++;
             roffset++;
         }
@@ -203,12 +200,8 @@ int main(int argc,
             }
         }
 
-        if(opcmp("limm", raw[raw_i], 2, 2, OP_LOAD))
-            binary[roffset++] = 0x00;
-        else if(opcmp("lmem", raw[raw_i], 3, 3, OP_LOAD))
-            binary[roffset++] = 0x01;
-        else if(!(opcmp("halt", raw[raw_i], 0, 0, OP_HLT) ||
-           opcmp("load", raw[raw_i], 2, 3, OP_LOAD) ||
+        if(!(opcmp("halt", raw[raw_i], 0, 0, OP_HLT) ||
+           opcmp("load", raw[raw_i], 3, 3, OP_LOAD) ||
            opcmp("store", raw[raw_i], 3, 3, OP_STORE) ||
            opcmp("mhml", raw[raw_i], 2, 2, OP_MHML) ||
            opcmp("loadlh", raw[raw_i], 1, 1, OP_LOADLH) ||
@@ -241,7 +234,10 @@ int main(int argc,
             return 1;
         }
 
-        for (int j = 0; j < MAX_WORDS; j++) {
+        bool operandsig[3] = { false, false, false};
+        uint8_t opi = 0;
+
+        for (int j = 0; j < 3; j++) {
             if (raw[raw_i][j] == NULL)
                 break;
 
@@ -249,6 +245,7 @@ int main(int argc,
 
             if (input == NULL || input[0] == ';') break;
 
+            operandsig[opi] = true;
             if(strcmp(input, "a") == 0)
                 binary[roffset++] = 0x00;
             else if(strcmp(input, "b") == 0)
@@ -313,17 +310,21 @@ int main(int argc,
                 size_t hex_digit_count = strlen(input + 2);
                 unsigned long value = strtoul(input, NULL, 16);
 
-                if(hex_digit_count == 2)
+                if(hex_digit_count == 2) {
                     binary[roffset++] = (uint8_t)value;
-                else if(hex_digit_count == 4) {
+                    operandsig[opi] = false;
+                } else if(hex_digit_count == 4) {
                     binary[roffset++] = (uint8_t)(value & 0xFF);
                     binary[roffset++] = (uint8_t)(value >> 8);
+                    operandsig[opi++] = false;
+                    operandsig[opi] = false;
                 } else {
                     fprintf(stderr, "Error:%d: Invalid hex format (too large) for %s\n", raw_i + 1, input);
                     return 1;
                 }
             } else if(is_number(input)) {
                 binary[roffset++] = (uint8_t)(atoi(input));
+                operandsig[opi] = false;
             } else if(strcmp("str", raw[raw_i][0]) == 0) {
                 size_t len = strlen(input);
                 for(size_t i = 0; i < len; i++)
@@ -332,7 +333,19 @@ int main(int argc,
             } else if(!insertSymbolAddress(input)) {
                 printf("Error:%d: Unknown parameter type for %s\n", raw_i + 1, input);
                 return 1;
+            } else {
+                operandsig[opi++] = false;
+                operandsig[opi] = false;
             }
+
+            opi++;
+        }
+
+        if(cur_opcode_off != 0xFFFF)
+        {
+            binary[cur_opcode_off] |= (operandsig[0] << 5);
+            binary[cur_opcode_off] |= (operandsig[1] << 6);
+            binary[cur_opcode_off] |= (operandsig[2] << 7);
         }
     }
 

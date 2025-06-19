@@ -28,9 +28,10 @@ typedef struct {
     // NOTE: ta,tc,tc,td is created to minimise the argument bloat, and cmp is the result of cmp for JE and JNE to use
     // Updated instruction argument gathering system
     uint8_t instruction;
-    uint8_t operandsig;
+    bool operandsig[3];
     uint8_t tn;
-    uint8_t targ[4];
+    uint8_t *targ[3];
+    uint8_t timm[3];
     uint8_t cmp;
 
     // Registers for a function to return a value       Return Register
@@ -66,7 +67,7 @@ typedef struct {
     uint8_t h;
 
     // Register array for offsetting
-    uint8_t *reg[0xFF];
+    uint8_t *regtable[0xFF];
 } cpu_core_t;
 
 /*
