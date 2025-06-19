@@ -1,14 +1,12 @@
 main:
+	call  *clearscreen
 	mov   a    0x00
-	mov   b    0xFF
-
 	mov   c    0x00				; Counter
-	mov   d    0x0A				; Counter limit
 mainpreintloop:
-	cmp   c    d
+	cmp   c    0x0A
 	jne   *mainpreintsp
 	call  *helper_printnl
-	mov   c 0x00
+	mov   c    0x00
 	jmp   *mainintloop
 mainpreintsp:
 	call  *helper_printsp
@@ -16,7 +14,7 @@ mainpreintsp:
 mainintloop:
 	call  *printint
 	inc   a
-	cmp   a    b
+	cmp   a    0xFF
 	jne   *mainpreintloop
 mainreadline:
 	call  *helper_printnl
@@ -43,15 +41,11 @@ helper_printsp:
 ; a is the first 8bit of the 16bit address
 ; b is the second 8bit of the 16bit address
 printf:
-	mov   c    0x00				; NULL termination
-	mov   ml   b				; Moving parameters to memory registers
-	mov   mh   a
-printfloop:
-	llh   b						; Loading character at the memory address
-	store b   0x00C0			; Writing the character to the serial device
-	inc   ml					; Incrementing the high bit of the memory address
-	cmp   b   c					; Comparing the character and check if its a null termination
-	jne   *printfloop			; If its not do a reloop and if it is return to the caller
+	load  c	   b   a			; Loading character at the memory address
+	store c    0x00C0			; Writing the character to the serial device
+	inc   b 					; Incrementing the high bit of the memory address
+	cmp   c    0x00				; Comparing the character and check if its a null termination
+	jne   *printf				; If its not do a reloop and if it is return to the caller
 	ret
 
 ;
@@ -62,19 +56,13 @@ printfloop:
 ; a is the first 8bit of the 16bit address
 ; b is the second 8bit of the 16bit address
 fgets:
-	mov   c    0x0A				; Loading newline character for comparison
-	mov   ml   b				; Moving parameters to memory registers
-	mov   mh   a
-fgetsloop:
-	load  b    0x00C0			; Loading keyboard input from serial device
-	store b    0x00C0			; Print the keyboard input back to serial device
-	slh   b						; Store the character to the memory address
-	inc   ml					; Increment high bit
-	cmp   c    b				; Check if its a newline character
-	jne   *fgetsloop			; If it is a newline character do not continue loop
-fgetsend:
-	mov   b    0x00
-	slh   b
+	load  c    0x00C0			; Loading keyboard input from serial device
+	store c    0x00C0			; Print the keyboard input back to serial device
+	store c    b   a			; Store the character to the memory address
+	inc   b 					; Increment high bit
+	cmp   c    0x0A				; Check if its a newline character
+	jne   *fgets 				; If it is a newline character do not continue loop
+	store 0x00 b   a
 	ret
 
 ;
@@ -86,30 +74,26 @@ fgetsend:
 ;
 printint:
 	mov  b 0x00
-	mov  c 0x0A
-	mov  d 0x00
-	mov  e 0x64
+	mov  c 0x00
 printintloopbig:
-	cmp  a e
+	cmp  a 0x64
 	jl   *printintloop
-	sub  a e
-	inc  d
+	sub  a 0x64
+	inc  c
 	jmp  *printintloopbig
 printintloop:
-	cmp  a c
+	cmp  a 0x0A
 	jl   *printend
-	sub  a c
+	sub  a 0x0A
 	inc  b
 	jmp *printintloop
 printend:
-	mhml  0x00C0
-	mov   c 0x30
-	add   d c
-	slh   d
-	add   b c
-	slh   b
-	add   a c
-	slh   a
+	add   c 0x30
+	add   b 0x30
+	add   a 0x30
+	store c 0x00C0
+	store b 0x00C0
+	store a 0x00C0
 	ret
 
 ;
@@ -119,21 +103,15 @@ printend:
 ;
 clearscreen:
 	mhml 0x00C0
-	mov  a  0x1B
-	mov  b  0x5B
-	mov  c  0x33
-	mov  d  0x4A
-	mov  f  0x48
-	slh  a
-	slh  b
-	slh  c
-	slh  d
-	dec  c
-	slh  a
-	slh  b
-	slh  c
-	slh  d
-	slh  a
-	slh  b
-	slh  f
+	slh  0x1B
+	slh  0x5B
+	slh  0x33
+	slh  0x4A
+	slh  0x1B
+	slh  0x5B
+	slh  0x32
+	slh  0x4A
+	slh  0x1B
+	slh  0x5B
+	slh  0x48
 	ret
