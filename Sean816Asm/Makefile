@@ -2,4 +2,4 @@
 
 all:
 	clang  *.c -o Sean816Asm
-	./Sean816Asm test.asm test.bin
+	./Sean816Asm test/test.asm test.bin
