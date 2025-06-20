@@ -92,6 +92,50 @@ void cpu_call(cpu_core_t *core)
     core->pc =  (*core->targ[1] << 8) | *core->targ[0];
 }
 
+void cpu_calle(cpu_core_t *core)
+{
+    if(core->cmp != 0)
+    {
+        core->pc = core->pc + 2;
+        return;
+    }
+
+    cpu_call(core);
+}
+
+void cpu_callne(cpu_core_t *core)
+{
+    if(core->cmp == 0)
+    {
+        core->pc = core->pc + 2;
+        return;
+    }
+
+    cpu_call(core);
+}
+
+void cpu_callg(cpu_core_t *core)
+{
+    if(core->cmp != 1)
+    {
+        core->pc = core->pc + 2;
+        return;
+    }
+
+    cpu_call(core);
+}
+
+void cpu_calll(cpu_core_t *core)
+{
+    if(core->cmp != 2)
+    {
+        core->pc = core->pc + 2;
+        return;
+    }
+
+    cpu_call(core);
+}
+
 void cpu_ret(cpu_core_t *core)
 {
     core->ra = core->a;                    // Copy over register values to the return register copy

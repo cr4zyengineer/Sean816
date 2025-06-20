@@ -57,6 +57,10 @@ void cpu_jl(cpu_core_t *core);
 void cpu_push(cpu_core_t *core);
 void cpu_pop(cpu_core_t *core);
 void cpu_call(cpu_core_t *core);
+void cpu_calle(cpu_core_t *core);
+void cpu_callne(cpu_core_t *core);
+void cpu_callg(cpu_core_t *core);
+void cpu_calll(cpu_core_t *core);
 void cpu_ret(cpu_core_t *core);
 
 void cpu_and(cpu_core_t *core);
@@ -94,6 +98,10 @@ instruction_t opcode_table[UINT8_MAX] = {
     cpu_push,
     cpu_pop,
     cpu_call,
+    cpu_calle,
+    cpu_callne,
+    cpu_callg,
+    cpu_calll,
     cpu_ret,
 
     cpu_and,
@@ -170,7 +178,7 @@ void cpu_exec_core(cpu_core_t *core)
         core->instruction = core->instruction & 0b11111;
 
         // Execute instruction
-        if((core->instruction != OP_HLT || core->instruction < 0x1A) && opcode_table[core->instruction])
+        if((core->instruction != OP_HLT || core->instruction < 0x1E) && opcode_table[core->instruction])
             opcode_table[core->instruction](core);
         else
             return;

@@ -5,24 +5,19 @@ main:
 	mov   b    ml
 	call  *printf
 	mov   a    0x00
-	mov   c    0x00				; Counter
-	jmp   *mainintloop
-mainpreintloop:
-	cmp   c    0x0A
-	jne   *mainpreintsp
-	call  *helper_printnl
-	mov   c    0x00
-	jmp   *mainintloop
-mainpreintsp:
-	call  *helper_printsp
-	inc   c
+	mov   gb   0x00
 mainintloop:
-	call  *printint
+    call  *printint
 	inc   a
 	cmp   a    0xFF
-	jne   *mainpreintloop
+	je    *mainreadline
+	inc   gb
+	cmp   gb   0x0D
+	calle *helper_printnl
+	callne *helper_printsp
+	jmp   *mainintloop
 mainreadline:
-	call  *helper_printnl
+    call  *helper_printnl
 	mov   a    0x02				; Specifying 0x0200 as memory address
 	mov   b    0x00
 	call  *fgets				; Getting userinput
@@ -30,6 +25,7 @@ mainreadline:
 	halt
 
 helper_printnl:
+	mov   gb 0x00
 	mov   a 0x0A
 	store a 0x00C0
 	ret

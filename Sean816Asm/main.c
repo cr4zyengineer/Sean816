@@ -243,6 +243,10 @@ int main(int argc,
            opcmp("push", raw[raw_i], 1, 1, OP_PUSH) ||
            opcmp("pop", raw[raw_i], 1, 1, OP_POP) ||
            opcmp("call", raw[raw_i], 2, 2, OP_CALL) ||
+           opcmp("calle", raw[raw_i], 2, 2, OP_CALLE) ||
+           opcmp("callne", raw[raw_i], 2, 2, OP_CALLNE) ||
+           opcmp("callg", raw[raw_i], 2, 2, OP_CALLG) ||
+           opcmp("calll", raw[raw_i], 2, 2, OP_CALLL) ||
            opcmp("ret", raw[raw_i], 0, 0, OP_RET) ||
            opcmp("and", raw[raw_i], 2, 2, OP_AND) ||
            opcmp("or", raw[raw_i], 2, 2, OP_OR) ||
