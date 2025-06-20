@@ -4,14 +4,13 @@
  */
 #include "../memory.h"
 #include "../cpu.h"
-#include "endian.h"
 #include <stdio.h>
 
 void cpu_jmp(cpu_core_t *core)
 {
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
+    core->pc = (*core->targ[1] << 8) | *core->targ[0];
 }
 
 void cpu_cmp(cpu_core_t *core)
@@ -36,7 +35,7 @@ void cpu_je(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
+    core->pc = (*core->targ[1] << 8) | *core->targ[0];
 }
 
 void cpu_jne(cpu_core_t *core)
@@ -49,7 +48,7 @@ void cpu_jne(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
+    core->pc = (*core->targ[1] << 8) | *core->targ[0];
 }
 
 void cpu_jg(cpu_core_t *core)
@@ -62,7 +61,7 @@ void cpu_jg(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
+    core->pc = (*core->targ[1] << 8) | *core->targ[0];
 }
 
 void cpu_jl(cpu_core_t *core)
@@ -75,5 +74,5 @@ void cpu_jl(cpu_core_t *core)
 
     cpu_core_get_args(core, 2);
 
-    core->pc = gather16Bit(*core->targ[0], *core->targ[1]);
+    core->pc = (*core->targ[1] << 8) | *core->targ[0];
 }

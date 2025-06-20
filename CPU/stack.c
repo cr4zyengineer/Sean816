@@ -4,7 +4,6 @@
  */
 #include "../cpu.h"
 #include "../memory.h"
-#include "endian.h"
 #include <stdio.h>
 
 static void cpu_prvt_push(cpu_core_t *core, uint8_t value)
@@ -28,7 +27,7 @@ static void cpu_prvt_pop16(cpu_core_t *core, uint16_t *value)
     uint8_t lo, hi;
     cpu_prvt_pop(core, &hi); // MSB
     cpu_prvt_pop(core, &lo); // LSB
-    *value = gather16Bit(lo, hi);
+    *value = (hi << 8) | lo;
 }
 
 void cpu_push(cpu_core_t *core)
@@ -66,7 +65,7 @@ void cpu_call(cpu_core_t *core)
     // TODO: If needed we need to add arguments to the calls. the issue is how do we indicate intermediate and register selection, shall it only be register selecttions!?
     // NOTE: Not really a Todo, more of an "Add the logic if current logic is sufficient"
 
-    core->pc =  gather16Bit(*core->targ[0], *core->targ[1]);
+    core->pc =  (*core->targ[1] << 8) | *core->targ[0];
 }
 
 void cpu_ret(cpu_core_t *core)
