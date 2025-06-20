@@ -294,18 +294,16 @@ int main(int argc,
                 binary[roffset++] = 0x16;
             else if(strcmp(input, "gh") == 0)
                 binary[roffset++] = 0x17;
-            else if(strcmp(input, "mo") == 0)
-                binary[roffset++] = 0x18;
             else if(strcmp(input, "ml") == 0)
-                binary[roffset++] = 0x19;
+                binary[roffset++] = 0x18;
             else if(strcmp(input, "mh") == 0)
-                binary[roffset++] = 0x1A;
+                binary[roffset++] = 0x19;
             else if(strcmp(input, "cmp") == 0)
-                binary[roffset++] = 0x1B;
+                binary[roffset++] = 0x1A;
             else if(strcmp(input, "spl") == 0)
-                binary[roffset++] = 0x1C;
+                binary[roffset++] = 0x1B;
             else if(strcmp(input, "sph") == 0)
-                binary[roffset++] = 0x1D;
+                binary[roffset++] = 0x1C;
             else if(strncmp(input, "0x", 2) == 0 || strncmp(input, "0X", 2) == 0) {
                 size_t hex_digit_count = strlen(input + 2);
                 unsigned long value = strtoul(input, NULL, 16);

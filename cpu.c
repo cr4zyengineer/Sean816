@@ -86,7 +86,6 @@ cpu_core_t* cpu_create_core(void)
 
     core->pc = MEMORY_MAPPED_IO_REGION_SIZE;    // Setting up program counter and stack pointer
     core->sp = MEMORY_SIZE;
-    core->mo = 0;
     core->ml = 0;
     core->mh = 0;
     core->cmp = 0;
@@ -118,14 +117,13 @@ cpu_core_t* cpu_create_core(void)
     core->regtable[0x15] = &core->gf;
     core->regtable[0x16] = &core->gg;
     core->regtable[0x17] = &core->gh;
-    core->regtable[0x18] = &core->mo;
-    core->regtable[0x19] = &core->ml;
-    core->regtable[0x1A] = &core->mh;
-    core->regtable[0x1B] = &core->cmp;
-    core->regtable[0x1C] = ((uint8_t*)&core->sp) + 1;
-    core->regtable[0x1D] = ((uint8_t*)&core->sp);
+    core->regtable[0x18] = &core->ml;
+    core->regtable[0x19] = &core->mh;
+    core->regtable[0x1A] = &core->cmp;
+    core->regtable[0x1B] = ((uint8_t*)&core->sp) + 1;
+    core->regtable[0x1C] = ((uint8_t*)&core->sp);
 
-    for(uint8_t i = 0; i < 0x1B; i++)
+    for(uint8_t i = 0; i < 0x1A; i++)
         *core->regtable[i] = 0x00;
 
     return core;
@@ -138,8 +136,6 @@ void cpu_exec_core(cpu_core_t *core)
 {
     while(1)
     {
-        core->tn = 0;
-
         // Read instruction
         memory_read(core->pc++, &core->instruction);
 
@@ -149,10 +145,8 @@ void cpu_exec_core(cpu_core_t *core)
         core->operandsig[2] = (core->instruction >> 7) & 1;
         core->instruction = core->instruction & 0b11111;
 
-        //printf("%d:%p:%d%d%d\n", core->pc, (void*)(uintptr_t)core->instruction, core->operandsig[0], core->operandsig[1], core->operandsig[2]);
-
         // Execute instruction
-        if(!(core->instruction == OP_HLT || core->instruction > 0x1B) && opcode_table[core->instruction])
+        if((core->instruction != OP_HLT || core->instruction < 0x1A) && opcode_table[core->instruction])
             opcode_table[core->instruction](core);
         else
             return;
@@ -164,9 +158,9 @@ void cpu_exec_core(cpu_core_t *core)
  */
 void cpu_core_get_args(cpu_core_t *core, uint8_t count)
 {
+    uint8_t value = 0x00;
     for(uint8_t i = 0; i < count; i++)
     {
-        uint8_t value = 0x00;
         memory_read(core->pc++, &value);
 
         if(core->operandsig[i] == true)

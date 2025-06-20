@@ -15,10 +15,6 @@ typedef struct {
     uint16_t bp;
     uint16_t sp;
 
-    // Memory offset register
-    // NOTE: This is a more old practise compared to the newer ML and MH registers but it sets off memory access done by LOAD and STORE
-    uint8_t mo;
-
     // Memory full addressing registers for low byte and high byte equalling a full address
     // NOTE: As the cpu is 8bit we need 2 registers to have arbitary 16bit memory reading and writing without editing exectable memory, as I later will add MMU(I already wrote one)
     uint8_t ml;
@@ -29,7 +25,6 @@ typedef struct {
     // Updated instruction argument gathering system
     uint8_t instruction;
     bool operandsig[3];
-    uint8_t tn;
     uint8_t *targ[3];
     uint8_t timm[3];
     uint8_t cmp;

@@ -56,7 +56,6 @@ void cpu_call(cpu_core_t *core)
     cpu_prvt_push16(core, core->pc);        // save return address
     cpu_prvt_push(core, core->mh);
     cpu_prvt_push(core, core->ml);
-    cpu_prvt_push(core, core->mo);
     cpu_prvt_push(core, core->a);           // save registers
     cpu_prvt_push(core, core->b);
     cpu_prvt_push(core, core->c);
@@ -93,7 +92,6 @@ void cpu_ret(cpu_core_t *core)
     cpu_prvt_pop(core, &core->c);
     cpu_prvt_pop(core, &core->b);
     cpu_prvt_pop(core, &core->a);
-    cpu_prvt_pop(core, &core->mo);
     cpu_prvt_pop(core, &core->ml);
     cpu_prvt_pop(core, &core->mh);
     cpu_prvt_pop16(core, &core->pc);

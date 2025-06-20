@@ -12,14 +12,14 @@ void cpu_load(cpu_core_t *core)
 {
     cpu_core_get_args(core, 3);
 
-    memory_read(gather16Bit(*core->targ[1], *core->targ[2]) + core->mo, core->targ[0]);
+    memory_read(gather16Bit(*core->targ[1], *core->targ[2]), core->targ[0]);
 }
 
 void cpu_store(cpu_core_t *core)
 {
     cpu_core_get_args(core, 3);
 
-    memory_write(gather16Bit(*core->targ[1], *core->targ[2]) + core->mo, *core->targ[0]);
+    memory_write(gather16Bit(*core->targ[1], *core->targ[2]), *core->targ[0]);
 }
 
 void cpu_mhml(cpu_core_t *core)
