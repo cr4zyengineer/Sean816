@@ -8,6 +8,8 @@
 #include <dlfcn.h>
 #include "memory.h"
 
+extern memory_io_mapping_t iomem[MEMORY_MAPPED_IO_REGION_SIZE];
+
 /*
  * Device loader
  *
@@ -26,8 +28,8 @@ void device_load_device(const char *path)
     // Load em!
     if(device_offset)
     {
-        void (*device_read)(uint8_t *value) = dlsym(handle, "device_read");
-        void (*device_write)(uint8_t value) = dlsym(handle, "device_write");
+        void (*device_read)(uint16_t addr, uint8_t *value) = dlsym(handle, "device_read");
+        void (*device_write)(uint16_t addr, uint8_t value) = dlsym(handle, "device_write");
         if(!device_read || !device_write)
         {
             printf("Error: Device %s is not valid!", path);
@@ -35,7 +37,13 @@ void device_load_device(const char *path)
         }
         uint16_t *addr = device_offset();
         for(size_t i = 0; addr[i] != 0x0000; i++)
-            memory_io_set(addr[i], device_read, device_write);
+        {
+            if(addr[i] >= MEMORY_MAPPED_IO_REGION_SIZE)
+                return;
+            iomem[addr[i]].isSet = true;
+            iomem[addr[i]].rfunction = device_read;
+            iomem[addr[i]].wfunction = device_write;
+        }
     }
 
     // Initilize if the symbol does exist

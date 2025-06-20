@@ -20,12 +20,6 @@ typedef struct {
 } memory_io_mapping_t;
 
 /*
- * IO Memory shit
- *
- */
-void memory_io_set(uint16_t addr, void *rfunction, void *wfunction);
-
-/*
  * Read and write
  *
  */

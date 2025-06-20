@@ -26,8 +26,7 @@ int main(int argc, char **argv)
             if (i + 1 < argc) {
                 if(access(argv[i + 1], R_OK) == 0)
                 {
-                    device_load_device(argv[i + 1]);
-                    i++;
+                    device_load_device(argv[++i]);
                 } else {
                     fprintf(stderr, "Error: device not found at %s\n", argv[i + 1]);
                     return 1;
