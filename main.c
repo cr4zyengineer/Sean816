@@ -27,14 +27,11 @@
  *
  */
 #include <stdio.h>
-#include <stddef.h>
 #include <unistd.h>
 #include <string.h>
-#include "memory.h"
+#include "ROM/loader.h"
 #include "device.h"
 #include "cpu.h"
-
-void binload(const char *path);
 
 int main(int argc, char **argv)
 {
