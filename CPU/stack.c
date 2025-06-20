@@ -40,9 +40,6 @@ void cpu_push(cpu_core_t *core)
 
 void cpu_pop(cpu_core_t *core)
 {
-    // NOTE: Deny popping over to the caller snapshooted memory and tempering it by checking that we dont overstep it
-    if(core->bp >= core->sp) return;
-
     cpu_core_get_args(core, 1);
 
     cpu_prvt_pop(core, core->targ[0]);
