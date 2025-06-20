@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+extern uint8_t mem[MEMORY_SIZE];
+
 /*
  * Instructions
  */
@@ -136,10 +138,8 @@ void cpu_exec_core(cpu_core_t *core)
 {
     while(1)
     {
-        // Read instruction
-        memory_read(core->pc++, &core->instruction);
-
         // Decode instruction
+        core->instruction = mem[core->pc++];
         core->operandsig[0] = (core->instruction >> 5) & 1;
         core->operandsig[1] = (core->instruction >> 6) & 1;
         core->operandsig[2] = (core->instruction >> 7) & 1;
@@ -158,16 +158,9 @@ void cpu_exec_core(cpu_core_t *core)
  */
 void cpu_core_get_args(cpu_core_t *core, uint8_t count)
 {
-    uint8_t value = 0x00;
     for(uint8_t i = 0; i < count; i++)
-    {
-        memory_read(core->pc++, &value);
-
         if(core->operandsig[i] == true)
-            core->targ[i] = core->regtable[value];
-        else {
-            core->timm[i] = value;
-            core->targ[i] = &core->timm[i];
-        }
-    }
+            core->targ[i] = core->regtable[mem[core->pc++]];
+        else
+            core->targ[i] = &mem[core->pc++];
 }
