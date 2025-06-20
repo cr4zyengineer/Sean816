@@ -17,11 +17,11 @@ void cpu_cmp(cpu_core_t *core)
 {
     cpu_core_get_args(core, 2);
 
-    if(*core->targ[0] == *core->targ[1]) // JE would suceed
+    if(*core->targ[0] == *core->targ[1])
         core->cmp = 0;
-    else if(*core->targ[0] > *core->targ[1]) // JG, JNE would succeed
+    else if(*core->targ[0] > *core->targ[1])
         core->cmp = 1;
-    else if(*core->targ[0] < *core->targ[1]) // JL, JNE would suceed
+    else
         core->cmp = 2;
 }
 
