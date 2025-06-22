@@ -73,10 +73,8 @@ typedef struct {
     uint8_t gg;
     uint8_t gh;
 
-    // Accumulator                                      General Purpose Register
+    // General purpose registers                        General Purpose Register
     uint8_t a;
-
-    // General purpose registers
     uint8_t b;
     uint8_t c;
     uint8_t d;
